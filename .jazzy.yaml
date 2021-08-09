@@ -1,0 +1,7 @@
+# LiveChat document generator jazzy settings
+
+copyright: Copyright 2021 Teknasyon
+author: Ali Hilal
+xcodebuild_arguments: [-target, LiveChat-iOS]
+clean: true
+output: ./Documentation

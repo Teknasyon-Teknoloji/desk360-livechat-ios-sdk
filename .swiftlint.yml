@@ -1,0 +1,29 @@
+opt_in_rules: # some rules are only opt-in
+  - empty_count
+  - redundant_nil_coalescing
+  - switch_case_on_newline
+  - force_unwrapping
+  - closure_spacing
+  - sorted_imports
+  - nslocalizedstring_require_bundle
+
+included:
+  - Sources
+
+excluded: # paths to ignore during linting. Takes precedence over `included`.
+  - Tests
+  - Example
+  - Pods
+
+disabled_rules: # rule identifiers to exclude from running
+  - trailing_whitespace
+  - line_length
+  - identifier_name
+  - switch_case_on_newline
+  
+type_body_length:
+  - 500 
+  - 700
+file_length:
+  warning: 700
+  error: 1000

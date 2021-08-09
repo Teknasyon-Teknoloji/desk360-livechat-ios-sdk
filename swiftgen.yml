@@ -1,0 +1,5 @@
+fonts:
+  inputs: Sources/Assets/Fonts
+  outputs:
+    templateName: swift4
+    output: Sources/Assets/Fonts/Fonts.swift
