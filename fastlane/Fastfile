@@ -26,7 +26,7 @@ platform :ios do
     )
   end
   
-  desc "Release a new version of LiveChat"
+  desc "Release a new version of Desk360LiveChat"
   lane :release do |options|
     # Ensure Git status is clean
     ensure_git_status_clean
@@ -56,18 +56,18 @@ platform :ios do
     version = options[:version]
     # Set Podspec version
     version_bump_podspec(
-      path: "LiveChat.podspec", 
+      path: "Desk360LiveChat.podspec", 
       version_number: version
     )
     # Set Framework plist version
     set_info_plist_value(
-      path: "Configs/LiveChat.plist", 
+      path: "Configs/Desk360LiveChat.plist", 
       key: "CFBundleShortVersionString", 
       value: version
     )
     # Set Framework Tests plist version
     set_info_plist_value(
-      path: "Configs/LiveChatTests.plist", 
+      path: "Configs/Desk360LiveChatTests.plist", 
       key: "CFBundleShortVersionString", 
       value: version
     )
@@ -80,12 +80,12 @@ platform :ios do
     # Commit modified files
     git_commit(
         path: [
-          "LiveChat.podspec", 
-          "Configs/LiveChat.plist", 
-          "Configs/LiveChatTests.plist", 
+          "Desk360LiveChat.podspec", 
+          "Configs/Desk360LiveChat.plist", 
+          "Configs/Desk360LiveChatTests.plist", 
           "Example/Resources/Info.plist"
         ],
-        message: "LiveChat Version #{version} 🚀"
+        message: "Desk360LiveChat Version #{version} 🚀"
     )
   end
 
@@ -93,36 +93,23 @@ platform :ios do
   lane :tests do
     # Perform iOS Tests
     scan(
-      project: "LiveChat.xcodeproj",
-      scheme: "LiveChat-iOS",
+      project: "Desk360LiveChat.xcodeproj",
+      scheme: "Desk360LiveChat-iOS",
       clean: true
     )
-    # Perform tvOS Tests
-    scan(
-      project: "LiveChat.xcodeproj",
-      scheme: "LiveChat-tvOS",
-      clean: true
-    )
-    # Perform macOS Tests
-    spm(command: "test")
+
     # Delete SPM build artifacts
     spm(command: "clean")
   end
 
   desc "Run Dependency-Manager compatibility tests"
   lane :compatibilityTests do
-    # Carthage build to ensure Carthage compatibility
-    carthage(
-      command: "build", 
-      no_skip_current: true, 
-      cache_builds: true
-    )
     # Pod lib lint to ensure CocoaPods compatibility
     pod_lib_lint(allow_warnings: true)
-    # SPM Build to ensure Swift Package Manager compatibility
-    spm(command: "build")
-    # Delete SPM build artifacts
-    spm(command: "clean")
+    # # SPM Build to ensure Swift Package Manager compatibility
+    # spm(command: "build")
+    # # Delete SPM build artifacts
+    # spm(command: "clean")
   end
 
 end

@@ -18,5 +18,4 @@ extension CGSize {
 	var minDimension: CGFloat {
 		return min(width, height)
 	}
-
 }

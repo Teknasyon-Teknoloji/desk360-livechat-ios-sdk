@@ -114,7 +114,7 @@ final class Session {
                             promise.succeed(value: ())
                          }
                     } else {
-                        promise.fail(error: AnyError(message: "failed to autuntiate"))
+                        promise.fail(error: AnyError(message: "Failed to authenticate"))
                         // return promise.future
                     }
                 }

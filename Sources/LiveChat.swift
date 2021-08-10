@@ -11,8 +11,6 @@ import FirebaseCore
 import FirebaseDatabase
 import UIKit
 
-let appName = "DESK360-live-chat-sdk-app"
-
 public final class Desk360LiveChat {
     static public let shared = Desk360LiveChat()
     
@@ -65,8 +63,9 @@ public final class Desk360LiveChat {
 
 extension FirebaseApp {
     
+	static var liveChatAppName = "DESK360-live-chat-sdk-app"
     static var liveChatApp: FirebaseApp? {
-        guard let app = FirebaseApp.app(name: appName) else { return nil }
+		guard let app = FirebaseApp.app(name: FirebaseApp.liveChatAppName) else { return nil }
         return app
     }
 }

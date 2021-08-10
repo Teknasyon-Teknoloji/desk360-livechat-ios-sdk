@@ -3,7 +3,7 @@
 import PackageDescription
 
 let package = Package(
-    name: "LiveChat",
+    name: "Desk360LiveChat",
     platforms: [
         .iOS(.v9),
         .tvOS(.v9),
@@ -12,20 +12,20 @@ let package = Package(
     ],
     products: [
         .library(
-            name: "LiveChat",
-            targets: ["LiveChat"]
+            name: "Desk360LiveChat",
+            targets: ["Desk360LiveChat"]
         ),
     ],
     dependencies: [],
     targets: [
         .target(
-            name: "LiveChat",
+            name: "Desk360LiveChat",
             dependencies: [],
             path: "Sources"
         ),
         .testTarget(
-            name: "LiveChatTests",
-            dependencies: ["LiveChat"],
+            name: "Desk360LiveChatTests",
+            dependencies: ["Desk360LiveChat"],
             path: "Tests"
         ),
     ]

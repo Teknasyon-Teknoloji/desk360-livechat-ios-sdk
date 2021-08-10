@@ -100,7 +100,7 @@ class BootstrappingViewModel {
         options.databaseURL = config.databaseURL
         options.projectID = config.projectID
         if FirebaseApp.liveChatApp == nil {
-            FirebaseApp.configure(name: appName, options: options)
+			FirebaseApp.configure(name: FirebaseApp.liveChatAppName, options: options)
         }
         
         Session.checkValidity()
