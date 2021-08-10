@@ -1,7 +1,7 @@
 Pod::Spec.new do |s|
-  s.name                      = "LiveChat"
+  s.name                      = "Desk360LiveChat"
   s.version                   = "1.0.0"
-  s.summary                   = "LiveChat"
+  s.summary                   = "Desk360LiveChat brings simplicity and usability in one place. With it you can bring live support to your app with only few lines of code"
   s.homepage                  = "https://github.com/Teknasyon-Teknoloji/desk360-livechat-ios-sdk"
   s.license                   = { :type => "Commercial", :file => "LICENSE" }
   s.author                    = { "Teknasyon" => "http://www.teknasyon.com/" }
