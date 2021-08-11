@@ -13,10 +13,11 @@ class ChatInputView: UIView, Layoutable {
         let view = GrowingTextView()
         view.minHeight = 35
         view.maxHeight = 50
-        view.attributedPlaceholder = NSAttributedString(string: Strings.online_message, attributes: [.font: FontFamily.Gotham.book.font(size: 14), .foregroundColor: UIColor.lightGray])
+        let textColor = config?.chat.writeMessageTextColor.uiColor
+        view.attributedPlaceholder = NSAttributedString(string: Strings.online_message, attributes: [.font: FontFamily.Gotham.book.font(size: 14), .foregroundColor: textColor?.withAlphaComponent(0.5)])
         view.backgroundColor = config?.general.backgroundMainColor.uiColor
         view.font = FontFamily.Gotham.book.font(size: 14)
-        view.textColor = config?.chat.writeMessageTextColor.uiColor
+        view.textColor = textColor
         return view
     }()
     
@@ -40,8 +41,10 @@ class ChatInputView: UIView, Layoutable {
     
     lazy var attachmentButton: ActionButton = {
         let button = ActionButton(type: .system)
-        button.setImage(Images.attacment, for: .normal)
+        let image = Images.attacment.tinted(with: config?.chat.writeMessageIconColor.uiColor)
+        button.setImage(image, for: .normal)
         button.setSize(.init(width: 33, height: 33))
+        button.isHidden = !(config?.chat.addFileStatus ?? true)
         return button
     }()
     

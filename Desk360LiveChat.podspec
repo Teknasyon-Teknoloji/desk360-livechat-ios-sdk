@@ -26,11 +26,11 @@ Pod::Spec.new do |s|
 #     'EXCLUDED_ARCHS[sdk=iphonesimulator*]' => 'arm64'
 # }
 
- s.user_target_xcconfig = { 'EXCLUDED_ARCHS[sdk=iphonesimulator*]' => 'arm64' }
+#s.user_target_xcconfig = { 'EXCLUDED_ARCHS[sdk=iphonesimulator*]' => 'arm64' }
  s.static_framework = true
  s.requires_arc = true
 
  s.ios.resource_bundle = { "Desk360LiveChatAssets" => "Sources/Assets/Desk360LiveChatAssets.bundle/Images" }
- s.resources = "Sources/Assets/Desk360LiveChatAssets.bundle/*.{ttf}"
+ s.ios.resources = "Sources/Assets/Desk360LiveChatAssets.bundle/*.{ttf}"
 
 end

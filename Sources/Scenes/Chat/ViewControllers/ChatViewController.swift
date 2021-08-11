@@ -194,6 +194,8 @@ final class ChatViewController: BaseViewController, Layouting, ViewModelIntializ
 		}
 		
 		viewModel.listenForTypingEvents { _ in
+            guard config?.chat.typingStatus == true else { return }
+            
             self.layoutableView.agentView.typingInfolabel.text = Strings.online_typing
             self.debouncer.run {
                 Flow.delay(for: 1) {
