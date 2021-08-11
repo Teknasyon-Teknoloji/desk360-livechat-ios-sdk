@@ -76,7 +76,7 @@ class ChatBaseCell: UICollectionViewCell {
 			errorView.isHidden = viewModel?.isSentSuccessfully ?? false
             
             if viewModel?.isFromCurrentUser ?? true {
-                setuptextColors(config?.general.headerSubTitleColor.uiColor)
+                setuptextColors(config?.general.headerTitleColor.uiColor)
             } else {
                 setuptextColors(config?.chat.messageTextColor.uiColor)
             }
@@ -95,7 +95,7 @@ class ChatBaseCell: UICollectionViewCell {
         
         if viewModel.isFromCurrentUser {
             bubbleView.backgroundColor = config?.general.backgroundHeaderColor.uiColor
-            let color = config?.general.headerSubTitleColor.uiColor
+            let color = config?.general.headerTitleColor.uiColor
             let attr: [NSAttributedString.Key: Any] = [
                 NSAttributedString.Key.foregroundColor: color,
                 NSAttributedString.Key.underlineStyle: NSUnderlineStyle.single.rawValue,

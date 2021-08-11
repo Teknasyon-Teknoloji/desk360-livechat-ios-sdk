@@ -16,6 +16,7 @@ class ChatInputView: UIView, Layoutable {
         view.attributedPlaceholder = NSAttributedString(string: Strings.online_message, attributes: [.font: FontFamily.Gotham.book.font(size: 14), .foregroundColor: UIColor.lightGray])
         view.backgroundColor = config?.general.backgroundMainColor.uiColor
         view.font = FontFamily.Gotham.book.font(size: 14)
+        view.textColor = config?.chat.writeMessageTextColor.uiColor
         return view
     }()
     
@@ -23,7 +24,8 @@ class ChatInputView: UIView, Layoutable {
         let button = ActionButton(type: .system)
         button.setSize(.init(width: 44, height: 44))
         button.layer.cornerRadius = 12
-        button.setImage(Images.sendChat, for: .normal)
+        let image = Images.sendChat.tinted(with: config?.chat.writeMessageIconColor.uiColor)
+        button.setImage(image, for: .normal)
         button.adjustsImageWhenDisabled = true
         return button
     }()

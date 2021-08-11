@@ -79,7 +79,7 @@ class ChatTextMessageCell: ChatBaseCell {
         
         if viewModel.isFromCurrentUser {
             bubbleView.backgroundColor = config?.general.backgroundHeaderColor.uiColor
-            let color = config?.general.headerSubTitleColor.uiColor
+            let color = config?.general.headerTitleColor.uiColor
             let attr: [NSAttributedString.Key: Any] = [
                 NSAttributedString.Key.foregroundColor: color,
                 NSAttributedString.Key.underlineStyle: NSUnderlineStyle.single.rawValue,
