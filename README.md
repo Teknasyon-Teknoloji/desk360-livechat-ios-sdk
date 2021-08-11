@@ -1,4 +1,4 @@
-# Desk360LiveChat
+# Desk360 Chat iOS SDK
 <p align="center">
    <a href="https://developer.apple.com/swift/">
       <img src="https://img.shields.io/badge/Swift-5.2-orange.svg?style=flat" alt="Swift 5.2">
@@ -13,7 +13,7 @@
 </p>
 
 <p align="center">
-Desk360LiveChat brings simplicity and usability in one place. With it you can bring live support to your app with only few lines of code.
+Desk360 Chat SDK  provides simplicity and usability in one place. With this feature, you can provide live support to your customers directly within your app just by writing a few lines of code.
 </p>
 
 ## Features
@@ -81,4 +81,4 @@ You should use  [Desk360](https://desk360.com/)  dashboard for appearance config
 
 ## License
 
-Desk360LiveChat is released under the Commercial license. See  [LICENSE](https://github.com/Teknasyon-Teknoloji/desk360-livechat-ios-sdk/blob/master/LICENSE)  for more information.
+Desk360LiveChat is released under the MIT license. See  [LICENSE](https://github.com/Teknasyon-Teknoloji/desk360-livechat-ios-sdk/blob/master/LICENSE)  for more information.
