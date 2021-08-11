@@ -112,7 +112,8 @@ struct General: Codable {
 	let headerTitle, headerTitleColor, headerSubTitle, headerSubTitleColor: String
 	let backgroundColor, backgroundHeaderColor, backgroundMainColor, sendButtonText: String
 	let sendButtonTextColor, sendButtonIconColor, sendButtonBackgroundColor, sectionHeaderTitle: String
-	let sectionHeaderTitleColor, sectionHeaderText, sectionHeaderTextColor, linkTextColor: String
+    let sectionHeaderTitleColor, sectionHeaderText, sectionHeaderTextColor: String
+    let linkTextColor: String?
 
 	enum CodingKeys: String, CodingKey {
 		case brandLogo = "brand_logo"
