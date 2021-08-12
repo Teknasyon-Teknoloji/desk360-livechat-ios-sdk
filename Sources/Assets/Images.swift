@@ -13,7 +13,7 @@ struct Images {
     static func createImage(resources: String) -> UIImage {
 		guard let path = Bundle.assetsBundle?.path(forResource: resources, ofType: "png") else { return UIImage() }
 		guard let image = UIImage(contentsOfFile: path) else { return UIImage() }
-		return image.withRenderingMode(.alwaysOriginal)
+		return image.withRenderingMode(.alwaysTemplate)
 	}
 	
 	private static func createImageOriginal(resources: String) -> UIImage {

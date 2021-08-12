@@ -18,6 +18,7 @@ final class SessionTerminationView: UIView, Layoutable {
 		label.font = FontFamily.Gotham.medium.font(size: 20)
 		label.text = config?.feedback.headerTitle
 		label.textAlignment = .center
+        label.textColor = config?.general.sectionHeaderTextColor.uiColor
 		return label
 	}()
 	
@@ -26,6 +27,7 @@ final class SessionTerminationView: UIView, Layoutable {
 		label.numberOfLines = 0
 		label.font = FontFamily.Gotham.book.font(size: 16)
 		label.text = config?.feedback.headerText
+        label.textColor = config?.general.sectionHeaderTitleColor.uiColor
 		label.clipsToBounds = true
 		label.textAlignment = .center
 		return label

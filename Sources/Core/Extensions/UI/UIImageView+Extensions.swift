@@ -7,13 +7,23 @@
 
 import UIKit
 
-extension UIImageView {
-	func setTintColor(_ color: UIColor?) {
-		if #available(iOS 13.0, *), let color = color {
-			image?.withTintColor(color)
-		} else {
-			tintColor = color
-		}
-		setNeedsLayout()
-	}
+extension UIImage {
+    func tinted(with color: UIColor?, isOpaque: Bool = false) -> UIImage? {
+        let color = color ?? .white
+        var image: UIImage
+        if #available(iOS 13.0, *) {
+            
+            image = withTintColor(color)
+        } else {
+            let format = imageRendererFormat
+            format.opaque = isOpaque
+            withRenderingMode(.alwaysTemplate)
+            image = UIGraphicsImageRenderer(size: size, format: format).image { _ in
+                color.set()
+                withRenderingMode(.alwaysTemplate).draw(at: .zero)
+            }
+            
+        }
+        return image
+    }
 }
