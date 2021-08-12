@@ -103,29 +103,39 @@ final class ChatAgentView: UIView, Layoutable {
 	}
 	
 	func configure(with agent: Agent?) {
+        setAgentImage(agent)
 		if let agent = agent {
 			agentStatusIndicator.isHidden = false
 			typingInfolabel.isHidden = false
 			agentNameLabel.text = agent.name
             typingInfolabel.text = Strings.online
-            
-			guard let avatarUrl = URL(string: agent.avatar) else {
-                agentAvatarView.image = Images.avatarPlacegolder
-				return
-			}
-			agentAvatarView.kf.setImage(with: avatarUrl)
 		} else {
             typingInfolabel.text = Strings.offline
 			agentStatusIndicator.isHidden = true
 			agentNameLabel.text = config?.general.brandName ?? Storage.settings.object?.applicationName
-			guard let avatarUrl = URL(string: config?.general.brandLogo ?? "") else {
+		}
+	}
+    
+    private func setAgentImage(_ agent: Agent?) {
+        guard config?.general.agentPictureStatus == true else {
+            agentAvatarView.image = Images.avatarPlacegolder
+            return
+        }
+        
+        if let agent = agent {
+            guard let avatarUrl = URL(string: agent.avatar) else {
                 agentAvatarView.image = Images.avatarPlacegolder
                 return
             }
-			agentAvatarView.kf.setImage(with: avatarUrl)
-		}
-        
-	}
+            agentAvatarView.kf.setImage(with: avatarUrl)
+        } else {
+            guard let avatarUrl = URL(string: config?.general.brandLogo ?? "") else {
+                agentAvatarView.image = Images.avatarPlacegolder
+                return
+            }
+            agentAvatarView.kf.setImage(with: avatarUrl)
+        }
+    }
 }
 
 extension Agent.Status {
