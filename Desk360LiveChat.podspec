@@ -19,18 +19,7 @@ Pod::Spec.new do |s|
   s.dependency 'NVActivityIndicatorView'
   s.dependency 'Kingfisher'
 
-#   s.pod_target_xcconfig = { 'ONLY_ACTIVE_ARCH' => 'YES' }
-#   s.user_target_xcconfig = { 'ONLY_ACTIVE_ARCH' => 'YES' }
-
-#   s.pod_target_xcconfig = {
-#     'EXCLUDED_ARCHS[sdk=iphonesimulator*]' => 'arm64'
-# }
-
-#s.user_target_xcconfig = { 'EXCLUDED_ARCHS[sdk=iphonesimulator*]' => 'arm64' }
- s.static_framework = true
- # s.requires_arc = true
-
  s.ios.resource_bundle = { "Desk360LiveChatAssets" => "Sources/Assets/Desk360LiveChatAssets.bundle/Images" }
- s.ios.resources = "Sources/Assets/Desk360LiveChatAssets.bundle/*.{ttf}"
+ s.resources = "Sources/Assets/Desk360LiveChatAssets.bundle/*.{ttf}"
 
 end

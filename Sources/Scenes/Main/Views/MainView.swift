@@ -165,7 +165,8 @@ extension MainView {
         
         lazy var closeButton: ActionButton = {
             let button = ActionButton(type: .system)
-            button.setImage(Images.close.withRenderingMode(.alwaysOriginal), for: .normal)
+            let image = Images.close.tinted(with: .red)
+            button.setImage(image, for: .normal)
             return button
         }()
         
@@ -254,7 +255,6 @@ extension MainView {
             button.setTitle(Strings.startChatSendMessageButtonText, for: .normal)
             button.setTitleColor(config?.general.sendButtonTextColor.uiColor, for: .normal)
             button.setImage(Images.send.withRenderingMode(.alwaysOriginal), for: .normal)
-            button.imageView?.setTintColor(config?.general.sendButtonIconColor.uiColor)
             button.backgroundColor = config?.general.sendButtonBackgroundColor.uiColor
             button.imageEdgeInsets.left = -20
             button.layer.cornerRadius = 22
@@ -304,6 +304,8 @@ extension MainView {
             vStack.setCustomSpacing(20, after: subtitleLabel)
 //            layer.borderWidth = 1.5
 //            layer.borderColor = UIColor.santasGray.withAlphaComponent(0.3).cgColor
+            layer.borderWidth = 1.5
+            layer.borderColor = UIColor.white.cgColor
             setupShadow(opacity: 0.5, radius: 4, offset: .zero, color: UIColor.santasGray)
         }
     }

@@ -120,8 +120,9 @@ final class ContactInfoView: UIView, Layoutable, Loadingable {
 		let button = UIButton(type: .system)
 		button.setTitle(Strings.startChatSendMessageButtonText, for: .normal)
 		button.setTitleColor(config?.general.sendButtonTextColor.uiColor, for: .normal)
+        
 		button.setImage(Images.send.withRenderingMode(.alwaysOriginal), for: .normal)
-		button.imageView?.setTintColor(config?.general.sendButtonIconColor.uiColor)
+		// button.imageView?.setTintColor(config?.general.sendButtonIconColor.uiColor)
 		button.backgroundColor = config?.general.sendButtonBackgroundColor.uiColor
 		button.imageEdgeInsets.left = -20
 		button.layer.cornerRadius = 22
