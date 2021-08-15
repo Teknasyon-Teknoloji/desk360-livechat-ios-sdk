@@ -27,7 +27,7 @@ final class SessionTerminationViewController: BaseViewController, ViewModelIntia
 	
 	override func bindViewModel() {
 		super.bindViewModel()
-		layoutableView.agentView.configure(with: viewModel.agent)
+		layoutableView.agentView.configure(with: nil)
 		layoutableView.agentView.backButton.action = viewModel.backToRoot
 		
 		viewModel.statusHandler = { [weak self] newStatus in
