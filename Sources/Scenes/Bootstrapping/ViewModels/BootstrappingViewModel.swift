@@ -37,30 +37,9 @@ class BootstrappingViewModel {
     }
     
     func prepare() -> Future<Void, Error> {
-        if let token = Session.token {
-            Session.shared.loginToFirebase(using: token).on { _ in
-            } failure: { error in
-                Logger.logError(error)
-                Session.terminate()
-            }
-        }
-        
+        Auth.liveChat.currentUser?.getIDTokenForcingRefresh(true, completion: nil)
         self.router?.trigger(.intro)
         return .init(result: .success(()))
-    }
-    
-    private func getCredentails() -> Credentials? {
-        var credentails: Credentials?
-        if let creds = self.credentials {
-            credentails = creds
-        } else if let creds = Storage.credentails.object {
-            credentails = creds
-        }
-        return credentails
-    }
-    
-    func cacheActiveConverdation(_ conversation: RecentMessage?) {
-        Session.activeConversation = conversation
     }
     
     private func fetchSettings() -> Future<Void, Error> {
