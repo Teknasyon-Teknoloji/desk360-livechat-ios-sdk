@@ -8,7 +8,7 @@
 import UIKit
 
 final class ActiveConversationView: UIView, Layoutable {
-  
+    
     lazy var agentAvatar: UIImageView = {
         let view = UIImageView()
         view.setSize(.init(width: 40, height: 40))
@@ -19,9 +19,10 @@ final class ActiveConversationView: UIView, Layoutable {
     
     lazy var agentName: UILabel = {
         let label = UILabel()
-        label.textColor = .martinique
+        label.textColor = config?.general.sectionHeaderTitleColor.uiColor
         label.font = FontFamily.Gotham.medium.font(size: 17)
         label.text = "Harsha Buksh"
+        
         return label
     }()
     
@@ -65,17 +66,14 @@ final class ActiveConversationView: UIView, Layoutable {
             startChatButton
         ])
     
-    var textColor: UIColor {
-        config?.general.backgroundHeaderColor.uiColor ?? .dodgerBlue
-    }
-    
     func setupViews() {
         addSubview(stack)
         addSubview(agentStatusIndicator)
+        backgroundColor = .white
     }
     
     func setupLayout() { }
-
+    
     override func layoutSubviews() {
         super.layoutSubviews()
         stack.fillSuperview(padding: .init(v: 15, h: 20))
@@ -89,9 +87,10 @@ final class ActiveConversationView: UIView, Layoutable {
         
         addBorders(edges: .bottom, color: UIColor(hex: "#e3e6eb") ?? .cadetBlue, inset: 20, thickness: 1)
     }
-
+    
     func configure(with conversation: RecentMessage) {
         let agent = conversation.agent
+        let textColor = (conversation.message.isCustomer ? config?.general.headerTitleColor.uiColor : config?.chat.messageTextColor.uiColor) ?? .dodgerBlue
         agentName.text = agent.name
         questionHeadline.text = conversation.message.content
         questionHeadline.textColor = textColor
@@ -119,6 +118,11 @@ final class ActiveConversationView: UIView, Layoutable {
             default:
                 break
             }
+        }
+        
+        guard config?.general.agentPictureStatus == true else {
+            agentAvatar.image = Images.avatarPlacegolder
+            return
         }
         
         guard let avatarUrl = URL(string: agent.avatar) else {
@@ -176,7 +180,7 @@ extension UILabel {
 extension UIImage {
     
     func maskWithColor(color: UIColor) -> UIImage? {
-
+        
         UIGraphicsBeginImageContextWithOptions(self.size, false, self.scale)
         guard let context = UIGraphicsGetCurrentContext() else { return nil }
         

@@ -8,201 +8,226 @@
 import UIKit
 
 final class ContactInfoView: UIView, Layoutable, Loadingable {
-
+     
+    var customFieldsArray: Array<ValidatableField> = []
+    
     var isOnline: Bool = false {
         didSet {
+            customFieldsArray = customFields()
             setupLayout()
         }
     }
-
-	lazy var chatAgentView: ChatAgentView = {
-		ChatAgentView.create()
-	}()
-	
-	lazy var messageLabel: UILabel = {
-		let label = UILabel()
-		label.textAlignment = .center
-		label.text = Strings.welcome_message
-		label.numberOfLines = 2
-		return label
-	}()
-	
-	lazy var nameTextField: CustomTextField = {
-        let textField = CustomTextField(padding: .init(top: 0, left: 10, bottom: 0, right: 44))
-		textField.placeholder =  Strings.login_input_name + "*"
-		textField.heightAnchor.constraint(equalToConstant: 44).isActive = true
-		textField.layer.cornerRadius = 4
-		textField.layer.borderWidth = 1
-		textField.layer.borderColor = UIColor.lightGray.withAlphaComponent(0.5).cgColor
-        textField.font = FontFamily.Gotham.book.font(size: 14)
-        textField.textLimit = 50
-		return textField
-	}()
-	
-	lazy var nameErrorLabel: UILabel = {
-		let label = UILabel()
-		label.textColor = .red
-		label.text = Strings.required_message
-		label.font = FontFamily.Gotham.book.font(size: 11)
-		label.textAlignment = .left
-		label.isHidden = true
-		return label
-	}()
-	
-	lazy var emailTextField: CustomTextField = {
-		let textField = CustomTextField()
-		textField.placeholder = Strings.login_input_email + "*"
-		textField.heightAnchor.constraint(equalToConstant: 44).isActive = true
-		textField.layer.cornerRadius = 4
-		textField.layer.borderWidth = 1
-		textField.layer.borderColor = UIColor.lightGray.withAlphaComponent(0.5).cgColor
-        textField.font = FontFamily.Gotham.book.font(size: 14)
-		return textField
-	}()
-	
-    lazy var nameFieldLimit: UILabel = {
-        var label = UILabel()
-        label.font = .systemFont(ofSize: 12, weight: .regular)
-        label.textColor = .lightGray
-        label.text = "50/50"
+    
+    private lazy var desk360LogoView: Desk360View = {
+        let imageView = Desk360View()
+        return imageView
+    }()
+    
+    private lazy var scrollView: UIScrollView = {
+        let view = UIScrollView()
+        view.showsVerticalScrollIndicator = false
+        view.showsHorizontalScrollIndicator = false
+        view.keyboardDismissMode = .onDrag
+        return view
+    }()
+    
+    lazy var chatAgentView: ChatAgentView = {
+        ChatAgentView.create()
+    }()
+    
+    lazy var messageLabel: UILabel = {
+        let label = UILabel()
+        label.textAlignment = .center
+        label.text = Strings.welcome_message
+        label.numberOfLines = 0
+        label.textColor = config?.general.sectionHeaderTitleColor.uiColor
         return label
     }()
     
-	lazy var emailErrorLabel: UILabel = {
-		let label = UILabel()
-		label.textColor = .red
-		label.text =  Strings.required_message
-		label.font = FontFamily.Gotham.book.font(size: 11)
-		label.textAlignment = .left
-		label.isHidden = true
-		return label
-	}()
-	    
-	lazy var messageField: GrowingTextView = {
-		let view = GrowingTextView()
-		view.placeholder = Strings.offline_input_your_message
-		view.minHeight = 80
-		view.maxHeight = 200
-        view.font = FontFamily.Gotham.book.font(size: 14)
-		view.layer.cornerRadius = 4
-		view.layer.borderWidth = 1
-		view.keyboardDismissMode = .onDrag
-		view.layer.borderColor = UIColor.lightGray.withAlphaComponent(0.5).cgColor
+    lazy var nameTextField: ValidatableField = {
+        let textField = ValidatableField(padding: .init(top: 0, left: 10, bottom: 0, right: 44))
+        let color = config?.chat.placeholderColor.uiColor
         let font = FontFamily.Gotham.book.font(size: 14)
-        let color = UIColor.lightGray
-        view.attributedPlaceholder = .init(string: Strings.offline_input_your_message, attributes: [.font: font, .foregroundColor: color])
-		return view
-	}()
-	
-	lazy var messageErrorLabel: UILabel = {
-		let label = UILabel()
-		label.textColor = .red
-		label.text = Strings.required_message
-		label.font = FontFamily.Gotham.book.font(size: 11)
-		label.textAlignment = .left
-		label.isHidden = true
-		return label
-	}()
-	
-	lazy var fieldsStack: UIView = .vStack(
-		alignment: .fill,
-		distribution: .fill,
-		spacing: 8, [
-			nameTextField,
-			nameErrorLabel,
-			emailTextField,
-			emailErrorLabel,
-			messageField
-		]
-	)
-	
-	lazy var startChatButton: UIButton = {
-		let button = UIButton(type: .system)
-		button.setTitle(Strings.startChatSendMessageButtonText, for: .normal)
-		button.setTitleColor(config?.general.sendButtonTextColor.uiColor, for: .normal)
+        textField.attributedPlaceholder = .init(string: Strings.login_input_name + "*", attributes: [.font: font, .foregroundColor: color?.withAlphaComponent(0.7)])
+        textField.font = FontFamily.Gotham.book.font(size: 14)
+        textField.textLimit = 50
+        textField.textColor = config?.chat.messageTextColor.uiColor
+        return textField
+    }()
+    
+    lazy var emailTextField: ValidatableField = {
+        let textField = ValidatableField(padding: .init(top: 0, left: 10, bottom: 0, right: 10))
+        let color = config?.chat.placeholderColor.uiColor
+        let font = FontFamily.Gotham.book.font(size: 14)
+        textField.attributedPlaceholder = .init(string:  Strings.login_input_email + "*", attributes: [.font: font, .foregroundColor: color?.withAlphaComponent(0.7)])
+        textField.font = font
+        textField.textColor = config?.chat.messageTextColor.uiColor
+        textField.validators = [.notEmpty, .email]
+        return textField
+    }()
+    
+    lazy var nameFieldLimit: UILabel = {
+        var label = UILabel()
+        label.font = .systemFont(ofSize: 12, weight: .regular)
+        label.text = "0/50"
+        label.textColor = config?.chat.placeholderColor.uiColor
+        return label
+    }()
+    
+    lazy var messageField: GrowingTextView = {
+        let view = GrowingTextView()
+        let color = config?.chat.placeholderColor.uiColor
+        view.minHeight = 80
+        view.maxHeight = 200
+        view.font = FontFamily.Gotham.book.font(size: 14)
+        view.layer.cornerRadius = 4
+        view.layer.borderWidth = 1
+        view.keyboardDismissMode = .onDrag
+        view.layer.borderColor = color?.cgColor
+        let font = FontFamily.Gotham.book.font(size: 14)
+        view.textColor = config?.chat.messageTextColor.uiColor
+        view.attributedPlaceholder = .init(string: Strings.offline_input_your_message, attributes: [.font: font, .foregroundColor: color?.withAlphaComponent(0.7)])
+        view.backgroundColor = .clear
+        return view
+    }()
+    
+    lazy var messageErrorLabel: UILabel = {
+        let label = UILabel()
+        label.textColor = .red
+        label.text = Strings.required_message
+        label.font = FontFamily.Gotham.book.font(size: 11)
+        label.textAlignment = .left
+        label.isHidden = true
+        return label
+    }()
+    
+    
+    
+    lazy var startChatButton: UIButton = {
+        let button = UIButton(type: .system)
+        button.setTitle(Strings.startChatSendMessageButtonText, for: .normal)
+        button.setTitleColor(config?.general.sendButtonTextColor.uiColor, for: .normal)
+        let image = Images.send.tinted(with: config?.general.sendButtonTextColor.uiColor)
+        button.setImage(image, for: .normal)
+        button.backgroundColor = config?.general.sendButtonBackgroundColor.uiColor
+        button.imageEdgeInsets.left = -20
+        button.layer.cornerRadius = 22
+        button.titleLabel?.font = FontFamily.Gotham.medium.font(size: 14)
+        return button
+    }()
+    
+    func setupViews() { }
+    
+    func setupLayout() {
+        var fieldsStack: UIView  = {
+            .vStack(
+                alignment: .fill,
+                distribution: .fill,
+                spacing: 0,
+                [
+                    nameTextField,
+                    emailTextField,
+                ] + customFieldsArray + [messageField]
+            )
+        }()
         
-		button.setImage(Images.send.withRenderingMode(.alwaysOriginal), for: .normal)
-		// button.imageView?.setTintColor(config?.general.sendButtonIconColor.uiColor)
-		button.backgroundColor = config?.general.sendButtonBackgroundColor.uiColor
-		button.imageEdgeInsets.left = -20
-		button.layer.cornerRadius = 22
-		button.titleLabel?.font = FontFamily.Gotham.medium.font(size: 14)
-		return button
-	}()
-	
-	func setupViews() {
-		addSubview(chatAgentView)
-		addSubview(messageLabel)
-		addSubview(messageErrorLabel)
-		addSubview(fieldsStack)
-		addSubview(startChatButton)
-		chatAgentView.optionsButton.isHidden = true
-        addSubview(nameFieldLimit)
-	}
-	
-	func setupLayout() {
-		chatAgentView.anchor(
-			top: safeAreaLayoutGuide.topAnchor,
-			leading: leadingAnchor,
-			bottom: nil,
-			trailing: trailingAnchor,
-			size: .init(width: 0, height: 60)
-		)
-		
-//		companyStack.anchor(
-//			top: chatAgentView.topAnchor,
-//			leading: chatAgentView.leadingAnchor,
-//			bottom: nil,
-//			trailing: chatAgentView.trailingAnchor,
-//			padding: .init(v: 10, h: 20)
-//		)
-		
-		messageLabel.anchor(
-			top: chatAgentView.bottomAnchor,
-			leading: leadingAnchor,
-			bottom: nil,
-			trailing: trailingAnchor,
-			padding: .init(v: 20, h: 50)
-		)
-
-		messageErrorLabel.anchor(
-			top: messageField.bottomAnchor,
-			leading: leadingAnchor,
-			bottom: nil,
-			trailing: trailingAnchor,
-			padding: .init(v: 8, h: 20)
-		)
-		
-		fieldsStack.anchor(
-			top: messageLabel.bottomAnchor,
-			leading: leadingAnchor,
-			bottom: nil,
-			trailing: trailingAnchor,
-			padding: .init(v: 20, h: 20)
-		)
-		
-		startChatButton.centerXToSuperview()
+        
+        var contentView: UIView = {
+            let view = UIView()
+            view.addSubview(messageLabel)
+            view.addSubview(messageErrorLabel)
+            view.addSubview(fieldsStack)
+            view.addSubview(startChatButton)
+            view.addSubview(nameFieldLimit)
+            return view
+        }()
+        
+        addSubview(chatAgentView)
+        addSubview(scrollView)
+        scrollView.addSubview(contentView)
+        chatAgentView.optionsButton.isHidden = true
+        backgroundColor = .white
+        addSubview(desk360LogoView)
+        
+        chatAgentView.anchor(
+            top: safeAreaLayoutGuide.topAnchor,
+            leading: leadingAnchor,
+            bottom: nil,
+            trailing: trailingAnchor,
+            size: .init(width: 0, height: 60)
+        )
+        
+        scrollView.anchor(
+            top: chatAgentView.bottomAnchor,
+            leading: leadingAnchor,
+            bottom: desk360LogoView.topAnchor,
+            trailing: trailingAnchor,
+            padding: .init(v: 20, h: 0)
+        )
+        
+        contentView.anchor(
+            top: scrollView.topAnchor,
+            leading: scrollView.leadingAnchor,
+            bottom: scrollView.bottomAnchor,
+            trailing: scrollView.trailingAnchor
+        )
+        
+        contentView.widthAnchor.constraint(equalTo: widthAnchor).isActive = true
+        messageLabel.anchor(
+            top: scrollView.topAnchor,
+            leading: leadingAnchor,
+            bottom: nil,
+            trailing: trailingAnchor,
+            padding: .init(v: 20, h: 50)
+        )
+        
+        messageErrorLabel.anchor(
+            top: messageField.bottomAnchor,
+            leading: leadingAnchor,
+            bottom: nil,
+            trailing: trailingAnchor,
+            padding: .init(v: 8, h: 20)
+        )
+        
+        fieldsStack.anchor(
+            top: messageLabel.bottomAnchor,
+            leading: leadingAnchor,
+            bottom: nil,
+            trailing: trailingAnchor,
+            padding: .init(v: 20, h: 20)
+        )
+        
+        startChatButton.centerXToSuperview()
         let buttonTopAnchor: NSLayoutYAxisAnchor = isOnline ? fieldsStack.bottomAnchor : messageErrorLabel.bottomAnchor
-		startChatButton.anchor(
-			top: buttonTopAnchor,
-			leading: nil,
-			bottom: nil,
-			trailing: nil,
-			padding: .init(v: 25, h: 20)
-		)
+        startChatButton.anchor(
+            top: buttonTopAnchor,
+            leading: nil,
+            bottom: contentView.bottomAnchor,
+            trailing: nil,
+            padding: .init(v: 25, h: 20)
+        )
         
         nameFieldLimit.anchor(
             bottom: nameTextField.bottomAnchor,
             trailing: nameTextField.trailingAnchor,
-            padding: .init(top: 0, left: 0, bottom: 8, right: 8)
+            padding: .init(top: 0, left: 0, bottom: 22, right: 8)
         )
-	}
-	
-	override func layoutSubviews() {
-		super.layoutSubviews()
-		startChatButton.setSize(.init(width: frame.width * 0.6, height: 44))
-	}
-	
+        
+        desk360LogoView
+            .anchor(
+                top: nil,
+                leading: leadingAnchor,
+                bottom: safeAreaLayoutGuide.bottomAnchor,
+                trailing: trailingAnchor,
+                size: .init(width: frame.width, height: 44)
+            )
+    }
+    
+    override func layoutSubviews() {
+        super.layoutSubviews()
+        startChatButton.setSize(.init(width: frame.width * 0.6, height: 44))
+    }
+    
     func configure(with agentStaus: ContactInfoViewModel.AgentStatus) {
         switch agentStaus {
         case.online:
@@ -215,84 +240,26 @@ final class ContactInfoView: UIView, Layoutable, Loadingable {
             isOnline = false
             chatAgentView.typingInfolabel.text = config?.offline.headerText
         }
-	}
-	
-    private func onlineUserLayout() {
-        
     }
     
-    private func offlineUserLayout() {
-        
-    }
-    
-	override func touchesBegan(_ touches: Set<UITouch>, with event: UIEvent?) {
-		super.touchesBegan(touches, with: event)
-		endEditing(true)
-	}
-}
-
-class CustomTextField: UITextField, UITextFieldDelegate {
-
-    var textLimit = 0
-    private var padding = UIEdgeInsets(top: 0, left: 10, bottom: 0, right: 10)
-    
-    init(padding: UIEdgeInsets) {
-        self.padding = padding
-        super.init(frame: .zero)
-        delegate = self
-    }
-    
-	override init(frame: CGRect) {
-		super.init(frame: frame)
-        delegate = self
-	}
-	
-	func setPlaceHolderTextColor(_ color: UIColor) {
-		guard let holder = placeholder, !holder.isEmpty else { return }
-		attributedPlaceholder = NSAttributedString(string: holder, attributes: [.foregroundColor: color])
-	}
-	
-    override open func textRect(forBounds bounds: CGRect) -> CGRect {
-        return bounds.inset(by: padding)
-    }
-
-    override open func placeholderRect(forBounds bounds: CGRect) -> CGRect {
-        return bounds.inset(by: padding)
-    }
-
-    override open func editingRect(forBounds bounds: CGRect) -> CGRect {
-        return bounds.inset(by: padding)
-    }
-	
-	required init?(coder: NSCoder) {
-		fatalError("init(coder:) has not been implemented")
-	}
-	
-	 func shakeTextField() {
-		let shake: CABasicAnimation = CABasicAnimation(keyPath: "position")
-		shake.duration = 0.1
-		shake.repeatCount = 2
-		shake.autoreverses = true
-		
-		let fromPoint: CGPoint = CGPoint(x: self.center.x - 5, y: self.center.y)
-		let fromValue: NSValue = NSValue(cgPoint: fromPoint)
-		
-		let toPoint: CGPoint = CGPoint(x: self.center.x + 5, y: self.center.y)
-		let toValue: NSValue = NSValue(cgPoint: toPoint)
-		
-		shake.fromValue = fromValue
-		shake.toValue = toValue
-		self.layer.add(shake, forKey: "position")
-	}
-    
-    func textField(_ textField: UITextField, shouldChangeCharactersIn range: NSRange, replacementString string: String) -> Bool {
-        if textLimit <= 0 { return true }
-        
-        guard let preText = textField.text as NSString?,
-              preText.replacingCharacters(in: range, with: string).count <= textLimit else {
-            return false
+    override func touchesBegan(_ touches: Set<UITouch>, with event: UIEvent?) {
+        super.touchesBegan(touches, with: event)
+        if touches.first?.location(in: scrollView) != nil {
+            scrollView.endEditing(true)
         }
-        
-        return true
+        endEditing(true)
+    }
+    
+    private func customFields() -> [ValidatableField] {
+        guard let fileds = config?.offline.customFields, !isOnline else { return [] }
+        return fileds.map { field -> ValidatableField in
+            let textField = ValidatableField(padding: .init(top: 0, left: 10, bottom: 0, right: 10))
+            textField.placeholder = field.title
+            textField.key = field.key ?? ""
+            textField.validators = [.notEmpty]
+            textField.font = FontFamily.Gotham.book.font(size: 14)
+            textField.textColor = config?.chat.messageTextColor.uiColor
+            return textField
+        }
     }
 }

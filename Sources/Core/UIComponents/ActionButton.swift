@@ -9,7 +9,7 @@ import UIKit
 
 class ActionButton: UIButton {
 	var action: (() -> Void)?
-	
+    
 	override init(frame: CGRect) {
 		super.init(frame: frame)
 		DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) {

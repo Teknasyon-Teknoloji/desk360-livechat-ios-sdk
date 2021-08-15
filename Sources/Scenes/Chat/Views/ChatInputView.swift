@@ -9,13 +9,17 @@ import UIKit
 
 class ChatInputView: UIView, Layoutable {
     
+    private var isAttachmentHidden: Bool {
+        !(config?.chat.addFileStatus ?? true) || (Storage.settings.object?.chatbot ?? false)
+    }
+    
     lazy var textView: GrowingTextView = {
         let view = GrowingTextView()
         view.minHeight = 35
         view.maxHeight = 50
         let textColor = config?.chat.writeMessageTextColor.uiColor
-        view.attributedPlaceholder = NSAttributedString(string: Strings.online_message, attributes: [.font: FontFamily.Gotham.book.font(size: 14), .foregroundColor: textColor?.withAlphaComponent(0.5)])
-        view.backgroundColor = config?.general.backgroundMainColor.uiColor
+        view.placeholder = Strings.write_a_message
+        view.backgroundColor = .white
         view.font = FontFamily.Gotham.book.font(size: 14)
         view.textColor = textColor
         return view
@@ -44,14 +48,8 @@ class ChatInputView: UIView, Layoutable {
         let image = Images.attacment.tinted(with: config?.chat.writeMessageIconColor.uiColor)
         button.setImage(image, for: .normal)
         button.setSize(.init(width: 33, height: 33))
-        button.isHidden = !(config?.chat.addFileStatus ?? true)
+        button.isHidden = isAttachmentHidden
         return button
-    }()
-    
-    lazy var desk360Logo: UIImageView = {
-        let imageView = UIImageView()
-        imageView.image = Images.desk360
-        return imageView
     }()
     
     private lazy var hStack: UIView = .hStack(
@@ -71,30 +69,18 @@ class ChatInputView: UIView, Layoutable {
         super.init(frame: frame)
         setupViews()
         setupLayout()
-        backgroundColor = config?.general.backgroundMainColor.uiColor
+        backgroundColor = .white
     }
     
     required init?(coder: NSCoder) { fatalError("init(coder:) has not been implemented") }
     
     func setupViews() {
         addSubview(hStack)
-        addSubview(desk360Logo)
-        attachmentButton.isHidden = !(config?.chat.addFileStatus ?? true)
-        
-        if let chatbot = Storage.settings.object?.chatbot {
-            attachmentButton.isHidden = chatbot
-        }
-    }
-    
-    var hidesLogoView: Bool = false {
-        didSet {
-            self.desk360Logo.isHidden = hidesLogoView
-            self.invalidateIntrinsicContentSize()
-        }
+        attachmentButton.isHidden = isAttachmentHidden
     }
     
     override var intrinsicContentSize: CGSize {
-        let height: CGFloat = hidesLogoView ? 60 : 100
+        let height: CGFloat = 60 
         return CGSize(width: UIView.noIntrinsicMetric, height: height)
     }
     
@@ -102,19 +88,10 @@ class ChatInputView: UIView, Layoutable {
         
         autoresizingMask = [.flexibleHeight]
         
-        desk360Logo.anchor(
-            top: nil,
-            leading: nil,
-            bottom: safeAreaLayoutGuide.bottomAnchor,
-            trailing: nil,
-            padding: .init(v: 8, h: 0)
-        )
-        desk360Logo.centerXToSuperview()
-        
         hStack.anchor(
             top: topAnchor,
             leading: leadingAnchor,
-            bottom: desk360Logo.topAnchor,
+            bottom: safeAreaLayoutGuide.bottomAnchor,
             trailing: trailingAnchor,
             padding: .init(v: 8, h: 20)
         )

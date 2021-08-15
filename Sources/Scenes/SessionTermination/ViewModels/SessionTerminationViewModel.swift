@@ -31,10 +31,10 @@ final class SessionTerminationViewModel {
         self.loginProvider = loginProvider
         self.agent = agent
         self.credentials = credentials
+        Session.terminate()
     }
     
-    func prepareTranscript() /*-> Future<Void, Error>*/ {
-        // in case of success
+    func prepareTranscript() {
         router?.trigger(.transcript)
     }
     
@@ -89,21 +89,6 @@ final class SessionTerminationViewModel {
             } failure: { [weak self]  error in
                 self?.statusHandler?(.error(error))
             }
-        
-        //
-        //		loginProvider
-        //			.login(using: credentails)
-        //			.flatMap({ self.loginProvider.authenticateSession(with: $0.token) })
-        //			.on { [weak self] _ in
-        //				self?.statusHandler?(.showingData)
-        //				guard let agent = self?.agent else {
-        //					self?.statusHandler?(.error(AnyError(message: "Something wrong")))
-        //					return
-        //				}
-        //				self?.router?.trigger(.chat(agent: agent, user: credentails))
-        //			} failure: { [weak self] error in
-        //				self?.statusHandler?(.error(error))
-        //			}
     }
     
     func backToRoot() {

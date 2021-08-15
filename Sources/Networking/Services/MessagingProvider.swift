@@ -20,7 +20,7 @@ protocol MessagingProvider {
 	func updateMyMessageStatus(newStatus: Message.Status, messageID: String)
     func listenForMessages(completion: @escaping((MessagingResult) -> Void), agent: (@escaping (Agent?) -> Void), ended: ((Bool) -> Void)?)
 	func setAttachments(for messageID: String, attachments: Attachment)
-	func sendOfflineMessage(_ message: OfflineMessage) -> Future<JSONAny?, Error>
+    func sendOfflineMessage(_ message: OfflineMessage, customFields: [String: String]) -> Future<JSONAny?, Error>
 	func sendChatBootMessage(message: String) -> Future<JSONAny?, Error>
 	func listenFortypingEvents(from agentID: Int, completion: @escaping(Bool) -> Void)
 	func sendTypingEvents()
@@ -78,35 +78,6 @@ final class MessagingProviding: MessagingProvider {
 					return
 				}
                 promise.succeed(value: message)
-//				ref.getData { error, snapshot in
-//					if let error = error {
-//						Logger.logError(error)
-//						return
-//					}
-//
-//					guard let messagesDic = snapshot.value as? [String: [String: Any]] else {
-//						Logger.log(event: .error, "Could not decode messages")
-//						return
-//					}
-//
-//					for aMessage in messagesDic.map({ $0.value }) where aMessage is [String: [String: Any]] {
-//						let mssgs = aMessage.compactMap { key, value -> [String: Any]? in
-//							var _message = value as? [String: Any]
-//							_message?["id"] = key
-//							return _message
-//						}
-//
-//						mssgs.forEach { json in
-//							guard let msg = Message(from: json) else {
-//								promise.fail(error: AnyError(message: "An error occured"))
-//								return
-//							}
-//							promise.succeed(value: msg)
-//
-//						}
-//
-//					}
-//				}
 			}
 		
 		return promise.future
@@ -202,8 +173,10 @@ final class MessagingProviding: MessagingProvider {
 		}
 	}
 	
-	func sendOfflineMessage(_ message: OfflineMessage) -> Future<JSONAny?, Error> {
-		HttpClient.shared.post(to: .offlineMessage, parameters: message.toJSON())
+	func sendOfflineMessage(_ message: OfflineMessage, customFields: [String: String]) -> Future<JSONAny?, Error> {
+        var params = message.toJSON()
+        params.combine(with: customFields)
+		return HttpClient.shared.post(to: .offlineMessage, parameters: params)
 	}
 	
 	func sendChatBootMessage(message: String) -> Future<JSONAny?, Error> {

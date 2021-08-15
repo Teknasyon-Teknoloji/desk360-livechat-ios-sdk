@@ -34,14 +34,25 @@ extension Layoutable where Self: UIView {
 	/// - Returns: `self`
 	static func create(setupViews: Bool = true, setupLayout: Bool = true) -> Self {
 		let view = Self()
+        view.hideKeyboardWhenTappedAround()
 		if setupViews {
 			view.setupViews()
 		}
 		if setupLayout {
 			view.setupLayout()
 		}
-        
 		return view
 	}
+}
 
+extension UIView {
+    func hideKeyboardWhenTappedAround() {
+        let tap: UITapGestureRecognizer = UITapGestureRecognizer(target: self, action: #selector(dismissKeyboard))
+        tap.cancelsTouchesInView = false
+        addGestureRecognizer(tap)
+    }
+    
+    @objc private func dismissKeyboard() {
+        endEditing(true)
+    }
 }

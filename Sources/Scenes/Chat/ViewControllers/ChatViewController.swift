@@ -108,6 +108,7 @@ final class ChatViewController: BaseViewController, Layouting, ViewModelIntializ
         let topInset = navigationController?.navigationBar.frame.height ?? .zero
 		let bottomInset = chatView.frame.height
 		layoutableView.collectionView.contentInset = .init(top: -topInset + 15, left: 0, bottom: bottomInset, right: 0)
+        layoutableView.backgroundColor = .white
 	}
 	
 	override func bindUIControls() {
@@ -252,12 +253,6 @@ final class ChatViewController: BaseViewController, Layouting, ViewModelIntializ
         
         let keyboardScreenEndFrame = keyboardValue.cgRectValue
         let keyboardViewEndFrame = view.convert(keyboardScreenEndFrame, from: view.window)
-        if keyboardViewEndFrame.height >= 300 {
-            layoutableView.collectionView.scrollToLastItem(at: .bottom, animated: true)
-            chatView.hidesLogoView = true
-        } else {
-            chatView.hidesLogoView = false
-        }
     }
     
 	@objc private func adjustForKeyboard(notification: Notification) {
@@ -270,12 +265,10 @@ final class ChatViewController: BaseViewController, Layouting, ViewModelIntializ
             let topInset = navigationController?.navigationBar.frame.height ?? .zero
             let bottomInset: CGFloat = 0
             layoutableView.collectionView.contentInset = .init(top: 15, left: 0, bottom: bottomInset, right: 0)
-            chatView.hidesLogoView = false
             layoutableView.connectivityLabel.transform = .identity
 		} else {
 			layoutableView.collectionView.contentInset = UIEdgeInsets(top: 15, left: 0, bottom: keyboardViewEndFrame.height - view.safeAreaInsets.bottom, right: 0)
             layoutableView.connectivityLabel.transform = .init(translationX: 0, y: -(keyboardViewEndFrame.height - view.safeAreaInsets.bottom - chatView.frame.height))
-            chatView.hidesLogoView = keyboardViewEndFrame.height >= 300
 		}
        
 		layoutableView.collectionView.scrollIndicatorInsets = layoutableView.collectionView.contentInset

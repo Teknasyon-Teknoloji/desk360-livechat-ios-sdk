@@ -27,7 +27,6 @@ extension UIImage {
         let color = color ?? .white
         var image: UIImage
         if #available(iOS 13.0, *) {
-            
             image = withTintColor(color)
         } else {
             let format = imageRendererFormat

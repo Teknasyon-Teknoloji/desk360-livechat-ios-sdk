@@ -34,9 +34,8 @@ final class MainView: UIView, Layoutable {
         return view
     }()
     
-    private lazy var desk360LogoView: UIImageView = {
-        let imageView = UIImageView()
-        imageView.image = Images.desk360
+    private lazy var desk360LogoView: Desk360View = {
+        let imageView = Desk360View()
         return imageView
     }()
     
@@ -110,16 +109,14 @@ final class MainView: UIView, Layoutable {
             size: .init(width: 0, height: 70)
         )
         
-        //	    faqContainer.anchor(
-        //		   top: chatContainer.bottomAnchor,
-        //		   leading: overallContainer.leadingAnchor,
-        //		   bottom: overallContainer.bottomAnchor,
-        //		   trailing: overallContainer.trailingAnchor,
-        //		   padding: .init(top: 10, left: 20, bottom: 20, right: 20)
-        //	    )
-        //
-        desk360LogoView.centerXToSuperview()
-        desk360LogoView.anchor(bottom: bottomAnchor, padding: .init(top: 0, left: 0, bottom: 20, right: 0))
+        desk360LogoView
+            .anchor(
+                top: nil,
+                leading: leadingAnchor,
+                bottom: safeAreaLayoutGuide.bottomAnchor,
+                trailing: trailingAnchor,
+                size: .init(width: frame.width, height: 44)
+            )
     }
 }
 
@@ -165,7 +162,7 @@ extension MainView {
         
         lazy var closeButton: ActionButton = {
             let button = ActionButton(type: .system)
-            let image = Images.close.tinted(with: .red)
+            let image = Images.close.tinted(with: config?.general.headerTitleColor.uiColor)
             button.setImage(image, for: .normal)
             return button
         }()
@@ -184,8 +181,11 @@ extension MainView {
             addSubview(vStack)
             addSubview(closeButton)
             
-            let companyLogo: String = config?.general.brandLogo ?? Storage.settings.object?.applicationLogo ?? ""
-            companyLogoView.kf.setImage(with: URL(string: companyLogo))
+            if let companyLogo = config?.general.brandLogo ?? Storage.settings.object?.applicationLogo  {
+                companyLogoView.kf.setImage(with: URL(string: companyLogo), placeholder: Images.avatarPlacegolder)
+            } else {
+                companyLogoView.image = Images.avatarPlacegolder
+            }
         }
         
         func setupLayout() {
@@ -224,6 +224,7 @@ extension MainView {
             let label = UILabel()
             label.text = Strings.companyName
             label.font = FontFamily.Gotham.medium.font(size: 16)
+            label.textColor = config?.general.backgroundHeaderColor.uiColor
             return label
         }()
         
@@ -247,6 +248,9 @@ extension MainView {
             label.text = Strings.startChatContainerSubTitle
             label.font = FontFamily.Gotham.book.font(size: 14)
             label.textColor = config?.general.sectionHeaderTextColor.uiColor
+            label.numberOfLines = 0
+            label.adjustsFontSizeToFitWidth = true
+            label.textAlignment = .center
             return label
         }()
         
@@ -254,7 +258,7 @@ extension MainView {
             let button = ActionButton(type: .system)
             button.setTitle(Strings.startChatSendMessageButtonText, for: .normal)
             button.setTitleColor(config?.general.sendButtonTextColor.uiColor, for: .normal)
-            button.setImage(Images.send.withRenderingMode(.alwaysOriginal), for: .normal)
+            button.setImage(Images.send.tinted(with: config?.general.sendButtonTextColor.uiColor), for: .normal)
             button.backgroundColor = config?.general.sendButtonBackgroundColor.uiColor
             button.imageEdgeInsets.left = -20
             button.layer.cornerRadius = 22
@@ -271,7 +275,7 @@ extension MainView {
         }()
         
         func setupViews() {
-            backgroundColor = config?.general.backgroundMainColor.uiColor
+            backgroundColor = .white
             layer.cornerRadius = 8
             addSubview(companyName)
             addSubview(seperator)
@@ -280,7 +284,7 @@ extension MainView {
         
         func setupLayout() {
             companyName.centerXTo(centerXAnchor)
-            companyName.anchor(top: topAnchor, leading: nil, bottom: nil, trailing: nil)
+            companyName.anchor(top: topAnchor, padding: .init(top: 12, left: 0, bottom: 0, right: 0))
             
             startChatButton.setSize(.init(width: 250, height: 44))
             
@@ -302,10 +306,6 @@ extension MainView {
             )
             
             vStack.setCustomSpacing(20, after: subtitleLabel)
-//            layer.borderWidth = 1.5
-//            layer.borderColor = UIColor.santasGray.withAlphaComponent(0.3).cgColor
-            layer.borderWidth = 1.5
-            layer.borderColor = UIColor.white.cgColor
             setupShadow(opacity: 0.5, radius: 4, offset: .zero, color: UIColor.santasGray)
         }
     }

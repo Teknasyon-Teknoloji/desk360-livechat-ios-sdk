@@ -43,6 +43,11 @@ final class SessionTerminationViewController: BaseViewController, ViewModelIntia
 		layoutableView.startNewChatButton.action = viewModel.startNewChat
 
 	}
+    
+    override func setupAppearnace() {
+        super.setupAppearnace()
+        layoutableView.backgroundColor = .white
+    }
 }
 
 private extension SessionTerminationViewController {
