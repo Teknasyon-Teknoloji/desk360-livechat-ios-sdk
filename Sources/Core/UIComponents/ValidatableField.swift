@@ -11,6 +11,14 @@ final class ValidatableField: UIView {
     
     var key: String = ""
     
+    var shouldWiatValidation = false
+    
+    var showsTextLimit = false {
+        didSet {
+            fieldTextLimit.isHidden = !showsTextLimit
+        }
+    }
+    
     var isValid = false {
         didSet {
             errorLabel.isHidden = isValid
@@ -55,6 +63,12 @@ final class ValidatableField: UIView {
         set { textField.textLimit = newValue }
     }
     
+    var autoCorrectionEnabled: UITextAutocorrectionType = .default {
+        didSet {
+            textField.autocorrectionType = autoCorrectionEnabled
+        }
+    }
+    
     typealias ValidationRule = Validator<String, String>.Rule<String, String>
     var validators: [ValidationRule] = []
     
@@ -70,7 +84,7 @@ final class ValidatableField: UIView {
         return label
     }()
     
-    lazy var textField: CustomTextField = {
+    private lazy var textField: CustomTextField = {
         let textField = CustomTextField(padding: textPadding)
         let color = config?.chat.placeholderColor.uiColor
         let font = FontFamily.Gotham.book.font(size: 14)
@@ -82,15 +96,30 @@ final class ValidatableField: UIView {
         textField.font = FontFamily.Gotham.book.font(size: 14)
         textField.textLimit = 50
         textField.textColor = config?.chat.messageTextColor.uiColor
+        textField.addTarget(self, action: #selector(textDidChange(_:)), for: .editingChanged)
+        textField.autocorrectionType = .no
         return textField
+    }()
+    
+    private lazy var fieldTextLimit: UILabel = {
+        var label = UILabel()
+        label.font = .systemFont(ofSize: 12, weight: .regular)
+        label.text = "0/50"
+        label.textColor = config?.chat.placeholderColor.uiColor
+        label.isHidden = true
+        return label
     }()
     
     init(padding: UIEdgeInsets) {
         self.textPadding = padding
         super.init(frame: .zero)
+        Flow.delay(for: 0.1) {
+            self.errorMessage = nil
+        }
     }
     
     required init?(coder: NSCoder) { fatalError("init(coder:) has not been implemented") }
+    
     override var intrinsicContentSize: CGSize {
         let labelHeight = isValid ? 0 : errorLabel.bounds.height
         return .init(width: self.frame.width, height: 44 + labelHeight)
@@ -104,6 +133,8 @@ final class ValidatableField: UIView {
         super.layoutSubviews()
         addSubview(textField)
         addSubview(errorLabel)
+        addSubview(fieldTextLimit)
+        
         textField.anchor(
             top: topAnchor,
             leading: leadingAnchor,
@@ -118,5 +149,32 @@ final class ValidatableField: UIView {
             trailing: trailingAnchor,
             padding: .init(v: 4, h: 8)
         )
+    
+        fieldTextLimit.centerYTo(textField.centerYAnchor)
+        fieldTextLimit.anchor(
+            bottom: nil,
+            trailing: trailingAnchor,
+            padding: .init(top: 0, left: 0, bottom: 0, right: 6)
+        )
+    }
+}
+
+extension ValidatableField: UITextFieldDelegate {
+    
+    @objc private func textDidChange(_ sender: UITextField) {
+        if shouldWiatValidation && errorMessage == nil {
+            return
+        } else if shouldWiatValidation && errorMessage != nil {
+            validate()
+        } else {
+            validate()
+        }
+    }
+    
+    private func validate() {
+        let text = textField.text ?? ""
+        fieldTextLimit.text = "\(text.count)/50"
+        let result = validators.compactMap { $0.check(text) }
+        errorMessage = result.first
     }
 }

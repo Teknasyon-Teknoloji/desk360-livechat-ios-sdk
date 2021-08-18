@@ -16,6 +16,8 @@ struct Settings: Codable {
     let applicationName: String?
     let applicationLogo: String?
     let firebaseConfig: FirebaseConfig
+    let defaultBrandLogo: String?
+    let defaultAvatar: String?
     
     enum CodingKeys: String, CodingKey {
         case companyID = "company_id"
@@ -24,6 +26,8 @@ struct Settings: Codable {
         case applicationName = "application_name"
         case applicationLogo = "application_logo"
         case firebaseConfig = "firebase_config"
+        case defaultBrandLogo = "default_brand_logo"
+        case defaultAvatar = "default_avatar"
     }
 }
 

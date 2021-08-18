@@ -31,7 +31,9 @@ final class SessionTerminationViewModel {
         self.loginProvider = loginProvider
         self.agent = agent
         self.credentials = credentials
-        Session.terminate()
+        Flow.delay(for: 1) {
+            Session.terminate(forceDeleteCreds: false)
+        }
     }
     
     func prepareTranscript() {

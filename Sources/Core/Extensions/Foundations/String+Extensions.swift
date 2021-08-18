@@ -26,6 +26,11 @@ extension String {
     func trim() -> String {
         self.trimmingCharacters(in: .whitespacesAndNewlines)
     }
+    
+    func condenseWhitespace() -> String {
+        let components = components(separatedBy: .whitespacesAndNewlines)
+        return components.filter { !$0.isEmpty }.joined(separator: " ")
+    }
 }
 
 extension Sequence where Element: Equatable {

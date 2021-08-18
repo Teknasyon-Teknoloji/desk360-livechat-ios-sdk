@@ -66,6 +66,7 @@ final class ChatViewController: BaseViewController, Layouting, ViewModelIntializ
 	override func viewWillAppear(_ animated: Bool) {
 		super.viewWillAppear(animated)
 		UIApplication.shared.statusBarUIView?.backgroundColor = config?.general.backgroundHeaderColor.uiColor
+        viewModel.shouldRecieveNotifications(false)
 	}
 	
 	override func viewWillDisappear(_ animated: Bool) {
@@ -74,6 +75,7 @@ final class ChatViewController: BaseViewController, Layouting, ViewModelIntializ
         navigationItem.hidesBackButton = false
         self.navigationController?.setNavigationBarHidden(true, animated: false)
         self.navigationController?.navigationBar.isHidden = true
+        viewModel.shouldRecieveNotifications(true)
 	}
 	
 	override func viewDidDisappear(_ animated: Bool) {

@@ -22,7 +22,7 @@ class MediaMessageSizeCalculator: MessageSizeCalculator {
 				return .init(width: maxWidth - 80, height: 44 + textHeight)
 			}
 		case .video:
-            var uploadingIndicatorHeight: CGFloat = message.isUploading ? 20 : 0
+            var uploadingIndicatorHeight: CGFloat = message.isUploading ? 40 : 0
 			if message.isSentSuccessfully {
 				return .init(width: maxWidth - 80, height: 175 + textHeight + uploadingIndicatorHeight)
 			} else {

@@ -60,6 +60,10 @@ class ChatViewModel {
 		messageProvider.sendTypingEvents()
 	}
 	
+    func shouldRecieveNotifications(_ value: Bool) {
+        messageProvider.shouldRecieveNotifications(value)
+    }
+    
 	func send(message: MessageKind, completion: @escaping((Message) -> Void)) {
 		switch message {
 		case .attributedText(let text):
@@ -85,7 +89,7 @@ class ChatViewModel {
             Session.activeConversation = RecentMessage(agent: agent, message: Message(id: UUID.init().uuidString, content: "", createdAt: Date(), updatedAt: Date(), senderName: "", agentID: agent.id, status: .sent, attachment: nil, isCustomer: true, mediaItem: nil))
         }
         
-		messageProvider.listenForMessages(completion: { result in
+        messageProvider.listenForMessages(ofSession: Session.ID, completion: { result in
 			DispatchQueue.global(qos: .background).async {
 				let changedItems = result.changes.map { $0.item }.sorted(by: { $0.createdAt < $1.createdAt })
 				var changedSections = [IndexPathDiff]()
@@ -141,7 +145,7 @@ class ChatViewModel {
 	private func sendMessage(_ content: String, attachment: Attachment? = nil, completion: @escaping((Message) -> Void)) {
 		let message = Message(
 			id: UUID().uuidString,
-			content: content.trimmingCharacters(in: .whitespacesAndNewlines),
+            content: content.trim().condenseWhitespace(),
 			createdAt: Date(),
 			updatedAt: Date(),
 			senderName: userCredentials.name,
@@ -213,10 +217,11 @@ class ChatViewModel {
 		} else {
 			messages.last?.messages.append(.init(message: message))
 		}
-
+    
 		DispatchQueue.main.asyncAfter(deadline: .now() + 0.15) {
 			self.reload?()
 		}
+        
         messageViewModel(ofID: message.id)?.isUploading = true
 		sendFile(from: item, attachedWith: message)
 	}

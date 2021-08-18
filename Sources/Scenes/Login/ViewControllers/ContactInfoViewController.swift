@@ -32,10 +32,7 @@ final class ContactInfoViewController: BaseViewController, Layouting, ViewModelI
         layoutableView.chatAgentView.configure(with: nil)
         layoutableView.isOnline = viewModel.isOnline
         listenForUIEvents()
-        if let cred = Storage.credentails.object {
-            layoutableView.emailTextField.text = cred.email
-            layoutableView.nameTextField.text = cred.name
-        }
+        layoutableView.startChatButton.addTarget(self, action: #selector(didTapSubmitButton), for: .touchUpInside)
     }
     
     override func bindViewModel() {
@@ -63,27 +60,12 @@ final class ContactInfoViewController: BaseViewController, Layouting, ViewModelI
 // MARK: - View Helpers
 private extension ContactInfoViewController {
     func listenForUIEvents() {
-        layoutableView.nameTextField.addTarget(
-            self,
-            action: #selector(textFieldTextDidChange),
-            for: .editingChanged
-        )
-        
-        layoutableView.emailTextField.addTarget(
-            self,
-            action: #selector(textFieldTextDidChange),
-            for: .editingChanged
-        )
-        
         layoutableView.messageField.delegate = self
-        
-        layoutableView.startChatButton.addTarget(
-            self,
-            action: #selector(didTapSubmitButton),
-            for: .touchUpInside
-        )
-        
         layoutableView.chatAgentView.backButton.action = viewModel.back
+        if let cred = Storage.credentails.object {
+            layoutableView.emailTextField.text = cred.email
+            layoutableView.nameTextField.text = cred.name
+        }
     }
 }
 
@@ -95,16 +77,7 @@ extension ContactInfoViewController: GrowingTextViewDelegate {
 
 // MARK: - Actions
 private extension ContactInfoViewController {
-    @objc func textFieldTextDidChange(_ sender: ValidatableField) {
-        if sender == layoutableView.nameTextField.textField {
-            let count = layoutableView.nameTextField.text?.count ?? 0
-            layoutableView.nameFieldLimit.text = "\(count)/50"
-            layoutableView.nameTextField.isValid = !(sender.text?.trim().isEmpty ?? true)
-        } else if sender == layoutableView.emailTextField {
-            // layoutableView.emailErrorLabel.isHidden = !(sender.text?.trim().isEmpty ?? true)
-        }
-    }
-    
+   
     @objc func didTapSubmitButton() {
         if validate() {
             let email = layoutableView.emailTextField.text ?? ""

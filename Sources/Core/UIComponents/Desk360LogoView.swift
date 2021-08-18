@@ -5,7 +5,7 @@
 //  Created by Ali Ammar Hilal on 12.08.2021.
 //
 
-import Foundation
+import UIKit
 
 /// This view using for bottom desk360 bottom bar
 final class Desk360View: UIView {

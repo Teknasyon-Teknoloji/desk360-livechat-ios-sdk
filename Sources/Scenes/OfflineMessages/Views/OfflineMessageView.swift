@@ -25,6 +25,7 @@ final class OfflineMessageView: UIView, Layoutable, Loadingable {
 		label.font = FontFamily.Gotham.medium.font(size: 20)
 		// label.text = "Message Sent!"
 		label.textAlignment = .center
+        label.textColor = config?.general.sectionHeaderTitleColor.uiColor
 		return label
 	}()
 	
@@ -58,7 +59,7 @@ final class OfflineMessageView: UIView, Layoutable, Loadingable {
 		addSubview(closeChatButton)
 		messageTitle.text = Strings.message_sent_title
 		feedbackLabel.text = Strings.feedback_message
-		feedbackLabel.textColor = config?.chat.messageTextColor.uiColor
+        feedbackLabel.textColor = .black
 		backgroundColor = config?.chat.messageBackgroundColor.uiColor
 		
 	}

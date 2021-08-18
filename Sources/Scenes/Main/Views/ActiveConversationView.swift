@@ -90,7 +90,7 @@ final class ActiveConversationView: UIView, Layoutable {
     
     func configure(with conversation: RecentMessage) {
         let agent = conversation.agent
-        let textColor = (conversation.message.isCustomer ? config?.general.headerTitleColor.uiColor : config?.chat.messageTextColor.uiColor) ?? .dodgerBlue
+        let textColor = config?.general.sectionHeaderTitleColor.uiColor ?? .dodgerBlue
         agentName.text = agent.name
         questionHeadline.text = conversation.message.content
         questionHeadline.textColor = textColor
@@ -120,17 +120,29 @@ final class ActiveConversationView: UIView, Layoutable {
             }
         }
         
-        guard config?.general.agentPictureStatus == true else {
-            agentAvatar.image = Images.avatarPlacegolder
+        setAgentImage(agent)
+    }
+    
+    private func setAgentImage(_ agent: Agent?) {
+        guard let url = avatarURL(agent: agent) else {
+            // agentAvatar.image = Images.avatarPlacegolder
+            agentAvatar.kf.setImage(with: URL(string: Storage.settings.object?.defaultBrandLogo ?? ""))
             return
         }
         
-        guard let avatarUrl = URL(string: agent.avatar) else {
-            agentAvatar.image = Images.avatarPlacegolder
-            return
+        agentAvatar.kf.setImage(with: url, placeholder: Images.avatarPlacegolder)
+    }
+    
+    private func avatarURL(agent: Agent?) -> URL? {
+        let shouldShowAvatar = config?.general.agentPictureStatus ?? false
+        if let agent = agent, let avatarUrl = URL(string: agent.avatar), shouldShowAvatar {
+            return avatarUrl
+        } else if let avatarUrl = URL(string: config?.general.brandLogo ?? Storage.settings.object?.applicationLogo ?? "") {
+            // agentAvatar.image = Images.avatarPlacegolder
+            agentAvatar.kf.setImage(with: URL(string: Storage.settings.object?.defaultBrandLogo ?? ""))
+            return avatarUrl
         }
-        
-        agentAvatar.kf.setImage(with: avatarUrl)
+        return nil
     }
 }
 

@@ -8,11 +8,12 @@
 import UIKit
 
 final class ContactInfoView: UIView, Layoutable, Loadingable {
-     
+    
     var customFieldsArray: Array<ValidatableField> = []
     
     var isOnline: Bool = false {
         didSet {
+            customFieldsArray.forEach { $0.removeFromSuperview() }
             customFieldsArray = customFields()
             setupLayout()
         }
@@ -52,6 +53,8 @@ final class ContactInfoView: UIView, Layoutable, Loadingable {
         textField.font = FontFamily.Gotham.book.font(size: 14)
         textField.textLimit = 50
         textField.textColor = config?.chat.messageTextColor.uiColor
+        textField.showsTextLimit = true
+        textField.validators = [.notEmpty]
         return textField
     }()
     
@@ -63,15 +66,9 @@ final class ContactInfoView: UIView, Layoutable, Loadingable {
         textField.font = font
         textField.textColor = config?.chat.messageTextColor.uiColor
         textField.validators = [.notEmpty, .email]
+        textField.shouldWiatValidation = true
+        textField.autoCorrectionEnabled = .no
         return textField
-    }()
-    
-    lazy var nameFieldLimit: UILabel = {
-        var label = UILabel()
-        label.font = .systemFont(ofSize: 12, weight: .regular)
-        label.text = "0/50"
-        label.textColor = config?.chat.placeholderColor.uiColor
-        return label
     }()
     
     lazy var messageField: GrowingTextView = {
@@ -100,8 +97,6 @@ final class ContactInfoView: UIView, Layoutable, Loadingable {
         label.isHidden = true
         return label
     }()
-    
-    
     
     lazy var startChatButton: UIButton = {
         let button = UIButton(type: .system)
@@ -138,7 +133,6 @@ final class ContactInfoView: UIView, Layoutable, Loadingable {
             view.addSubview(messageErrorLabel)
             view.addSubview(fieldsStack)
             view.addSubview(startChatButton)
-            view.addSubview(nameFieldLimit)
             return view
         }()
         
@@ -205,12 +199,6 @@ final class ContactInfoView: UIView, Layoutable, Loadingable {
             bottom: contentView.bottomAnchor,
             trailing: nil,
             padding: .init(v: 25, h: 20)
-        )
-        
-        nameFieldLimit.anchor(
-            bottom: nameTextField.bottomAnchor,
-            trailing: nameTextField.trailingAnchor,
-            padding: .init(top: 0, left: 0, bottom: 22, right: 8)
         )
         
         desk360LogoView

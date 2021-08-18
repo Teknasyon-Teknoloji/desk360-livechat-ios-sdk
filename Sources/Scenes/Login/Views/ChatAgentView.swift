@@ -111,31 +111,32 @@ final class ChatAgentView: UIView, Layoutable {
 			agentNameLabel.text = agent.name
             typingInfolabel.text = Strings.online
 		} else {
-            typingInfolabel.text = Strings.offline
+            typingInfolabel.text = config?.offline.headerText
 			agentStatusIndicator.isHidden = true
 			agentNameLabel.text = config?.general.brandName ?? Storage.settings.object?.applicationName
 		}
 	}
     
     private func setAgentImage(_ agent: Agent?) {
-        guard config?.general.agentPictureStatus == true else {
-            agentAvatarView.image = Images.avatarPlacegolder
+        guard let url = avatarURL(agent: agent) else {
+            // agentAvatar.image = Images.avatarPlacegolder
+            agentAvatarView.kf.setImage(with: URL(string: Storage.settings.object?.defaultBrandLogo ?? ""))
             return
         }
         
-        if let agent = agent {
-            guard let avatarUrl = URL(string: agent.avatar) else {
-                agentAvatarView.image = Images.avatarPlacegolder
-                return
-            }
-            agentAvatarView.kf.setImage(with: avatarUrl)
-        } else {
-            guard let avatarUrl = URL(string: config?.general.brandLogo ?? Storage.settings.object?.applicationLogo ?? "") else {
-                agentAvatarView.image = Images.avatarPlacegolder
-                return
-            }
-            agentAvatarView.kf.setImage(with: avatarUrl, placeholder: Images.avatarPlacegolder)
+        agentAvatarView.kf.setImage(with: url, placeholder: Images.avatarPlacegolder)
+    }
+    
+    private func avatarURL(agent: Agent?) -> URL? {
+        let shouldShowAvatar = config?.general.agentPictureStatus ?? false
+        if let agent = agent, let avatarUrl = URL(string: agent.avatar), shouldShowAvatar {
+            return avatarUrl
+        } else if let avatarUrl = URL(string: config?.general.brandLogo ?? Storage.settings.object?.applicationLogo ?? "") {
+            // agentAvatarView.image = Images.avatarPlacegolder
+            agentAvatarView.kf.setImage(with: URL(string: Storage.settings.object?.defaultBrandLogo ?? ""))
+            return avatarUrl
         }
+        return nil
     }
 }
 

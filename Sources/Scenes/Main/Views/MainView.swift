@@ -183,6 +183,8 @@ extension MainView {
             
             if let companyLogo = config?.general.brandLogo ?? Storage.settings.object?.applicationLogo  {
                 companyLogoView.kf.setImage(with: URL(string: companyLogo), placeholder: Images.avatarPlacegolder)
+            } else if let url = Storage.settings.object?.defaultBrandLogo  {
+                companyLogoView.kf.setImage(with: URL(string: url))
             } else {
                 companyLogoView.image = Images.avatarPlacegolder
             }

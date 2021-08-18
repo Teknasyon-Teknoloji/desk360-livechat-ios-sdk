@@ -34,11 +34,12 @@ class ChatVideoMessageCell: ChatBaseCell {
 		return imageView
 	}()
 	
-	lazy var fileName: UILabel = {
-		let label = UILabel()
+	lazy var fileName: PaddingLabel = {
+		let label = PaddingLabel()
 		label.text = ""
 		label.textColor = .white
 		label.font = FontFamily.Gotham.book.font(size: 14)
+        label.clipsToBounds = true
 		return label
 	}()
 	
@@ -97,13 +98,11 @@ class ChatVideoMessageCell: ChatBaseCell {
     
 	lazy var fileStack: UIView = .hStack(
 		alignment: .fill,
-		distribution: .equalCentering,
+		distribution: .fill,
 		spacing: 8,
 		[
 			fileFormatIcon,
 			fileName,
-			.spacer(),
-			.spacer(),
 			.spacer()
 		]
 	)
@@ -117,6 +116,7 @@ class ChatVideoMessageCell: ChatBaseCell {
 		topContainer.addSubview(circleProgressView)
 		addSubview(progressContainer)
         bubbleView.addSubview(messageLabel)
+        fileStack.clipsToBounds = true
 	}
 	
 	override func layoutViews() {
@@ -133,8 +133,8 @@ class ChatVideoMessageCell: ChatBaseCell {
                 top: topContainer.bottomAnchor,
                 leading: bubbleView.leadingAnchor,
                 bottom: messageLabel.topAnchor,
-                trailing: tickView.leadingAnchor,
-                padding: .init(top: 10, left: 10, bottom: 10, right: 2)
+                trailing: trailingAnchor,
+                padding: .init(top: 10, left: 10, bottom: 10, right: 10)
             )
             
         } else {
