@@ -24,7 +24,11 @@ class PresentableCoordinator<Route>: NSObject, PresentableCoordinatorType {
 	
 	func start() { trigger(nil) }
 	func trigger(_ route: Route?) {}
-
+    
+    func deepLink(_ routes: [Route]) {
+        routes.forEach { self.trigger($0) }
+    }
+    
 	func asPresentable() -> UIViewController {
 		fatalError("Must override asPresentable()")
 	}

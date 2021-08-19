@@ -144,7 +144,7 @@ final class AppCoordinator: Coordinator<MainRoute> {
             }
 		}
 	}
-    
+
     private func listenForApplicationTermination() {
         NotificationCenter.default.addObserver(forName: UIApplication.willTerminateNotification, object: nil, queue: nil) { _ in
             UIApplication.shared.statusBarUIView?.backgroundColor = Desk360LiveChat.shared.defaultStatusBarColor
