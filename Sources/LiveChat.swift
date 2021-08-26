@@ -123,7 +123,7 @@ public final class Desk360LiveChat {
             appCoordinator = .init(credentials: nil, factory: ProvidersFactory(), presenter: topViewController)
         }
         guard let creds = Storage.credentails.object else { return }
-        appCoordinator?.deepLink([.bootstrap, .intro, .chat(agent: nil, user: creds, delegate: nil)])
+        // appCoordinator?.deepLink([.bootstrap, .intro, .chat(agent: nil, user: creds, delegate: nil)])
     }
     
     private func listenForAppLifeCycleEvents() {
@@ -133,7 +133,7 @@ public final class Desk360LiveChat {
     }
     
     @objc private func changeNotificationStatus() {
-        ProvidersFactory().makeMessagingProvider().shouldRecieveNotifications(true)
+      //  ProvidersFactory().makeMessagingProvider().shouldRecieveNotifications(true)
     }
 }
 
