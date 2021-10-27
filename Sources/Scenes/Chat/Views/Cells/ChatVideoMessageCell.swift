@@ -121,9 +121,6 @@ class ChatVideoMessageCell: ChatBaseCell {
 	
 	override func layoutViews() {
 		super.layoutViews()
-        let barHeight: CGFloat = viewModel?.isUploading == true ? 15 : 0
-        bubbleView.frame = bubbleView.frame.inset(by: .init(top: 0, left: 0, bottom: barHeight, right: 0))
-        
         topContainer.setSize(.init(width: 0, height: 110))
         if let vm = viewModel, vm.message.content.isEmpty == false {
             messageLabel.text = vm.message.content

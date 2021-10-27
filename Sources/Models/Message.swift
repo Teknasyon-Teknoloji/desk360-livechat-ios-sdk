@@ -143,7 +143,7 @@ extension Message {
 		
 		if let attachment = attachment, let type = attachment.type {
 			message["attachments"] = [type.rawValue: attachment.toJSON()]
-			message["status"] = Status.sending.rawValue
+			message["status"] = Status.sent.rawValue
 		
 		} else {
 			message["status"] = Status.sent.rawValue

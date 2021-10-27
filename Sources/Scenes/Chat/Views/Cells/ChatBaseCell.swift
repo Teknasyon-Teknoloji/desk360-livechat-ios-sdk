@@ -11,6 +11,8 @@ class ChatBaseCell: UICollectionViewCell {
 
 	weak var delegate: MessageCellDelegate?
 	
+    var attributes: MessagesCollectionViewLayoutAttributes?
+    
 	lazy var bubbleView: BubbleView = {
 		let view = BubbleView()
 		return view
@@ -64,7 +66,52 @@ class ChatBaseCell: UICollectionViewCell {
 		bubbleView.addSubview(tickAndTimeStack)
 	}
 	
-	func layoutViews() {}
+	func layoutViews() {
+        guard let attributes = attributes, let viewModel = viewModel else { return }
+        var x: CGFloat = 0
+        let barHeight: CGFloat = (viewModel.isUploading && viewModel.showingProgressBar) ? 45 : 0
+        let height = attributes.messageContainerSize.height
+        var cornerRadius: CGFloat = 0
+        if height <= 50 {
+            cornerRadius = height * 0.5
+        } else if height > 50 && height <= 120 {
+            cornerRadius = height * 0.3
+        } else {
+            cornerRadius = height * 0.1
+        }
+        
+        if height > 500 {
+           cornerRadius = 10
+        }
+        if attributes.isIncomingMessage {
+            bubbleView.direction = .left(edgesRaduis: .init(topLeft: 0, topRight: cornerRadius, bottomLeft: cornerRadius, bottomRight: cornerRadius))
+        } else {
+            x =  attributes.frame.width - attributes.messageContainerSize.width - attributes.messageContainerPadding.right
+            bubbleView.direction = .right(edgesRaduis: .init(topLeft: cornerRadius, topRight: 0, bottomLeft: cornerRadius, bottomRight: cornerRadius))
+        }
+        
+        bubbleView.frame = CGRect(origin: .init(x: x, y: 0), size: .init(width: attributes.messageContainerSize.width, height: attributes.messageContainerSize.height - barHeight))
+        
+        let textWidth = CGSize.labelSize(for: Strings.sdk_failed_to_send_message, font: UIFont.systemFont(ofSize: 10), considering: contentView.frame.width).width
+        let iconWidth: CGFloat = 30
+        let totalWidth = textWidth + iconWidth
+        var errorViewX =  bubbleView.frame.minX
+        let y = bubbleView.frame.maxY + 8
+        if attributes.isIncomingMessage {
+            errorViewX = bubbleView.frame.maxX - totalWidth
+        }
+        errorView.stack.alignment = attributes.cellBottomViewAlignment.alignment.stackViewAlignment()
+        errorView.stack.spacing = 4
+        errorView.frame.origin = .init(x: errorViewX, y: y)
+        errorView.errorLabel.textAlignment = attributes.cellBottomViewAlignment.alignment.textAlignment()
+        
+        errorView.frame.size = .init(width: textWidth + 30, height: 15)
+        if errorView.isHidden {
+        //    dateLabel.anchor(top: bubbleView.bottomAnchor, leading: leadingAnchor, bottom: bottomAnchor, trailing: trailingAnchor, padding: .init(v: 8, h: 10))
+        } else {
+        //  dateLabel.anchor(top: errorView.bottomAnchor, leading: leadingAnchor, bottom: bottomAnchor, trailing: trailingAnchor, padding: .init(v: 8, h: 10))
+        }
+    }
 	
 	override func layoutSubviews() {
 		super.layoutSubviews()
@@ -127,48 +174,7 @@ class ChatBaseCell: UICollectionViewCell {
 	override func apply(_ layoutAttributes: UICollectionViewLayoutAttributes) {
 		super.apply(layoutAttributes)
 		guard let attributes = layoutAttributes as? MessagesCollectionViewLayoutAttributes else { return }
-		var x: CGFloat = 0
-		let height = attributes.messageContainerSize.height
-        var cornerRadius: CGFloat = 0
-        if height <= 50 {
-            cornerRadius = height * 0.5
-        } else if height > 50 && height <= 120 {
-            cornerRadius = height * 0.3
-        } else {
-            cornerRadius = height * 0.1
-        }
-        
-        if height > 500 {
-           cornerRadius = 10
-        }
-		if attributes.isIncomingMessage {
-			bubbleView.direction = .left(edgesRaduis: .init(topLeft: 0, topRight: cornerRadius, bottomLeft: cornerRadius, bottomRight: cornerRadius))
-		} else {
-			x =  attributes.frame.width - attributes.messageContainerSize.width - attributes.messageContainerPadding.right
-			bubbleView.direction = .right(edgesRaduis: .init(topLeft: cornerRadius, topRight: 0, bottomLeft: cornerRadius, bottomRight: cornerRadius))
-		}
-		
-		bubbleView.frame = CGRect(origin: .init(x: x, y: 0), size: attributes.messageContainerSize)
-		
-        let textWidth = CGSize.labelSize(for: Strings.sdk_failed_to_send_message, font: UIFont.systemFont(ofSize: 10), considering: contentView.frame.width).width
-		let iconWidth: CGFloat = 30
-		let totalWidth = textWidth + iconWidth
-		var errorViewX =  bubbleView.frame.minX
-		let y = bubbleView.frame.maxY + 8
-		if attributes.isIncomingMessage {
-			errorViewX = bubbleView.frame.maxX - totalWidth
-		}
-		errorView.stack.alignment = attributes.cellBottomViewAlignment.alignment.stackViewAlignment()
-		errorView.stack.spacing = 4
-		errorView.frame.origin = .init(x: errorViewX, y: y)
-		errorView.errorLabel.textAlignment = attributes.cellBottomViewAlignment.alignment.textAlignment()
-		
-		errorView.frame.size = .init(width: textWidth + 30, height: 15)
-		if errorView.isHidden {
-		//	dateLabel.anchor(top: bubbleView.bottomAnchor, leading: leadingAnchor, bottom: bottomAnchor, trailing: trailingAnchor, padding: .init(v: 8, h: 10))
-		} else {
-        //  dateLabel.anchor(top: errorView.bottomAnchor, leading: leadingAnchor, bottom: bottomAnchor, trailing: trailingAnchor, padding: .init(v: 8, h: 10))
-		}
+        self.attributes = attributes
 	}
 	
     func setuptextColors(_ color: UIColor?) {
@@ -183,14 +189,16 @@ class ChatBaseCell: UICollectionViewCell {
 }
 
 extension Message.Status {
-	var image: UIImage? {
-		switch self {
-		case .read:
-			return Images.readTick
-        case .sent, .delivered:
-			return Images.deliveredTick
-		default:
-			return nil
-		}
-	}
+    var image: UIImage? {
+        switch self {
+        case .read:
+            return Images.readTick
+        case .delivered:
+            return Images.deliveredTick
+        case .sent:
+            return Images.sentTick
+        default:
+            return nil
+        }
+    }
 }

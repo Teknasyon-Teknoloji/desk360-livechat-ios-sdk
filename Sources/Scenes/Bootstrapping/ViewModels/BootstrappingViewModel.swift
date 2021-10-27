@@ -62,7 +62,7 @@ class BootstrappingViewModel {
             .getSettings(language: languageCode)
             .map { settings -> Void in
                 try? Storage.settings.save(settings)
-                self.initFirebase(using: settings.firebaseConfig)
+                FirebaseApp.initIfNeeded(using: settings.firebaseConfig)
             }
     }
     
@@ -79,7 +79,7 @@ class BootstrappingViewModel {
         options.databaseURL = config.databaseURL
         options.projectID = config.projectID
         if FirebaseApp.liveChatApp == nil {
-			FirebaseApp.configure(name: FirebaseApp.liveChatAppName, options: options)
+            FirebaseApp.configure(name: FirebaseApp.liveChatAppName, options: options)
         }
         
         Session.checkValidity()

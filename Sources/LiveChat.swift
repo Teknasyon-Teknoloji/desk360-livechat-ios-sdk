@@ -109,6 +109,7 @@ public final class Desk360LiveChat {
         presentFromDeepLink(sessionID: id)
     }
     
+
     private func userInfoHandle(_ data: [String: Any]) -> String? {
         guard let hermes = data["hermes"] as? [String: AnyObject] else { return nil }
         guard let detail = hermes["target_detail"] as? [String: AnyObject] else { return nil }
@@ -119,11 +120,14 @@ public final class Desk360LiveChat {
     }
     
     private func presentFromDeepLink(sessionID: String) {
+        guard let config = Storage.settings.object?.firebaseConfig else { return }
+        FirebaseApp.initIfNeeded(using: config)
+        
         if let topViewController = UIApplication.topViewController() {
             appCoordinator = .init(credentials: nil, factory: ProvidersFactory(), presenter: topViewController)
         }
         guard let creds = Storage.credentails.object else { return }
-        // appCoordinator?.deepLink([.bootstrap, .intro, .chat(agent: nil, user: creds, delegate: nil)])
+        appCoordinator?.deepLink([.bootstrap, .intro, .chat(agent: nil, user: creds, delegate: nil)])
     }
     
     private func listenForAppLifeCycleEvents() {
@@ -131,9 +135,12 @@ public final class Desk360LiveChat {
         
         NotificationCenter.default.addObserver(self, selector: #selector(changeNotificationStatus), name: UIApplication.willResignActiveNotification, object: nil)
     }
-    
+
     @objc private func changeNotificationStatus() {
-      //  ProvidersFactory().makeMessagingProvider().shouldRecieveNotifications(true)
+        guard let config = Storage.settings.object?.firebaseConfig else { return }
+        FirebaseApp.initIfNeeded(using: config)
+        
+        ProvidersFactory().makeMessagingProvider().shouldRecieveNotifications(true)
     }
 }
 
@@ -142,6 +149,27 @@ extension FirebaseApp {
     static var liveChatApp: FirebaseApp? {
         guard let app = FirebaseApp.app(name: FirebaseApp.liveChatAppName) else { return nil }
         return app
+    }
+    
+    static func initIfNeeded(using config: FirebaseConfig, validateSession: Bool = true) {
+        let appID = config.appID.replacingOccurrences(of: "web", with: "ios")
+        let gcmID = config.appID.components(separatedBy: ":")[1]
+        
+        let options = FirebaseOptions(
+            googleAppID: appID,
+            gcmSenderID: gcmID
+        )
+        
+        options.apiKey = config.apiKey
+        options.databaseURL = config.databaseURL
+        options.projectID = config.projectID
+        if FirebaseApp.liveChatApp == nil {
+            FirebaseApp.configure(name: FirebaseApp.liveChatAppName, options: options)
+        }
+        
+        if validateSession {
+            Session.checkValidity()
+        }
     }
 }
 

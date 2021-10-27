@@ -31,7 +31,7 @@ final class SessionTerminationViewModel {
         self.loginProvider = loginProvider
         self.agent = agent
         self.credentials = credentials
-        Flow.delay(for: 1) {
+        Flow.delay(for: 1.3) {
             Session.terminate(forceDeleteCreds: false)
         }
     }

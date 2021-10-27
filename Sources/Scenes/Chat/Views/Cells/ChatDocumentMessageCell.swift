@@ -103,8 +103,6 @@ final class ChatDocumentMessageCell: ChatBaseCell {
 	override func layoutViews() {
 		super.layoutViews()
     
-        let barHeight: CGFloat = viewModel?.isUploading == true ? 15 : 0
-        bubbleView.frame = bubbleView.frame.inset(by: .init(top: 0, left: 0, bottom: barHeight, right: 0))
         if let vm = viewModel, vm.message.content.isEmpty == false {
             messageLabel.text = vm.message.content
             messageLabel.anchor(
@@ -176,13 +174,25 @@ final class ChatDocumentMessageCell: ChatBaseCell {
             size: .init(width: bubbleView.frame.width, height: 40)
         )
 		
-		progressBarView.anchor(top: progressContainer.topAnchor, leading: progressContainer.leadingAnchor, bottom: nil, trailing: progressContainer.trailingAnchor, padding: .init(v: 10, h: 10), size: .init(width: bubbleView.frame.width, height: 2.5))
+		progressBarView
+            .anchor(
+                top: progressContainer.topAnchor,
+                leading: progressContainer.leadingAnchor,
+                bottom: nil,
+                trailing: progressContainer.trailingAnchor,
+                padding: .init(v: 10, h: 10),
+                size: .init(width: bubbleView.frame.width, height: 2.5)
+            )
 		
-		progressLabel.anchor(top: progressBarView.bottomAnchor, leading: progressBarView.leadingAnchor, bottom: progressContainer.bottomAnchor, trailing: progressContainer.trailingAnchor, padding: .init(v: 4, h: 10))
-		
+		progressLabel.anchor(
+            top: progressBarView.bottomAnchor,
+            leading: progressBarView.leadingAnchor,
+            bottom: progressContainer.bottomAnchor,
+            trailing: progressContainer.trailingAnchor,
+            padding: .init(v: 4, h: 10)
+        )
 	}
-    
-    
+
     override func prepareForReuse() {
         super.prepareForReuse()
         messageLabel.text = ""
