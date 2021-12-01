@@ -1,13 +1,20 @@
 # Desk360 Chat iOS SDK
+
 <p align="center">
    <a href="https://developer.apple.com/swift/">
+
       <img src="https://img.shields.io/badge/Swift-5.2-orange.svg?style=flat" alt="Swift 5.2">
+
    </a>
    <a href="http://cocoapods.org/pods/LiveChat">
+
       <img src="https://img.shields.io/cocoapods/v/LiveChat.svg?style=flat" alt="Version">
+
    </a>
    <a href="http://cocoapods.org/pods/LiveChat">
+
       <img src="https://img.shields.io/cocoapods/p/LiveChat.svg?style=flat" alt="Platform">
+
    </a>
 
 </p>
@@ -18,11 +25,11 @@ Desk360 Chat SDK  provides simplicity and usability in one place. With this feat
 
 ## Features
 
-- [x]  Talk to your customers using our panel and make use of our SDK to identify a user and provide contextual support.
-- [x] Ability to integrate Chatbots.
-- [x] Multi-lingual support: It supports 40+ languages.
-- [x] Supports different types of media and file formats.
-- [x] Easy to use and integrate, only one line of code!
+* [x]  Talk to your customers using our panel and make use of our SDK to identify a user and provide contextual support.
+* [x] Ability to integrate Chatbots.
+* [x] Multi-lingual support: It supports 40+ languages.
+* [x] Supports different types of media and file formats.
+* [x] Easy to use and integrate, only one line of code!
 
 ## Example
 
@@ -51,29 +58,32 @@ You must add your info.plist file.
 <key>NSPhotoLibraryUsageDescription</key>
 <string>Allow the app to access your photos.</string>
 ```
+
 you can present the live support screen from any view controller like follows
+
 ```swift
-	Desk360LiveChat
-	.shared
-	.start(
-			appKey: "12345",
-			host: "yourapp.desk360.com",
-			language: "en" // Optional
-			using: Credentials(name: "Test", email: "test@test.com"), // Optional
-			on: self
-		)
+Desk360LiveChat
+.shared
+.start(
+   appKey: "12345",
+   host: "yourapp.desk360.com",
+   language: "en" // Optional
+   loginCredentials: Credentials(name: "Test", email: "test@test.com"), // Optional
+   on: self
+   )
 ```
+
 <br>
 
 > If you're using IQKeyboardManager in your project please ignore Desk360LiveChat classes from it by calling:
 >
-```swift
-   let viewControllers = LiveChat.shared.viewControllersToBeExcludedFromIQKeyboardManager
-   viewControllers.forEach {
-	   IQKeyboardManager.sharedManager().disabledDistanceHandlingClasses.append($0)
-    }
-```
 
+```swift
+let viewControllers = LiveChat.shared.viewControllersToBeExcludedFromIQKeyboardManager
+viewControllers.forEach {
+   IQKeyboardManager.sharedManager().disabledDistanceHandlingClasses.append($0)
+   }
+```
 
 ##  Theme Customization
 
