@@ -146,7 +146,7 @@ struct General: Codable {
 // MARK: - Offline
 struct Offline: Codable {
     let headerText: String
-    let triggersStatus: Bool
+    let triggersStatus: Bool?
     let customFields: [CustomField]
     
     enum CodingKeys: String, CodingKey {
@@ -171,7 +171,7 @@ struct Offline: Codable {
 // MARK: - Online
 struct Online: Codable {
     let headerText: String
-    let triggersStatus: Bool
+    let triggersStatus: Bool?
     
     enum CodingKeys: String, CodingKey {
         case headerText = "header_text"

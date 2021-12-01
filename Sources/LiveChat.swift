@@ -84,7 +84,12 @@ public final class Desk360LiveChat {
         try? Storage.appKey.save(properites.appKey)
         try? Storage.langaugeCode.save(properites.language)
         try? Storage.host.save(properites.host)
-        try? Storage.credentails.save(properites.loginCredentials)
+        if let creds = properites.loginCredentials {
+            try? Storage.credentails.save(creds)
+        } else {
+            Storage.credentails.delete()
+        }
+       
         
         appCoordinator?.trigger(.bootstrap)
     }
