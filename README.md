@@ -6,14 +6,14 @@
       <img src="https://img.shields.io/badge/Swift-5.2-orange.svg?style=flat" alt="Swift 5.2">
 
    </a>
-   <a href="http://cocoapods.org/pods/LiveChat">
+   <a href="http://cocoapods.org/pods/Desk360LiveChat">
 
-      <img src="https://img.shields.io/cocoapods/v/LiveChat.svg?style=flat" alt="Version">
+      <img src="https://img.shields.io/cocoapods/v/Desk360LiveChat.svg?style=flat" alt="Version">
 
    </a>
-   <a href="http://cocoapods.org/pods/LiveChat">
+   <a href="http://cocoapods.org/pods/Desk360LiveChat">
 
-      <img src="https://img.shields.io/cocoapods/p/LiveChat.svg?style=flat" alt="Platform">
+      <img src="https://img.shields.io/cocoapods/p/Desk360LiveChat.svg?style=flat" alt="Platform">
 
    </a>
 
