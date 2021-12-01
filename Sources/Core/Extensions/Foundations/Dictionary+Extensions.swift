@@ -41,4 +41,10 @@ extension Dictionary where Key == String {
 		guard let aValue  = current as? T else { return value() }
 		return aValue
 	}
+    
+    mutating func combine(with anotherDic: [Key: Value]){
+        for (k, v) in anotherDic {
+            updateValue(v, forKey: k)
+        }
+    }
 }

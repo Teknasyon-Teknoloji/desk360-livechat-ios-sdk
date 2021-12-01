@@ -44,15 +44,12 @@ class HttpClient {
 						promise.fail(error: AnyError(message: object.meta?.message))
 					}
 				case .failure(let error):
-                 
 					promise.fail(error: error)
 				}
-        }.cURLDescription { string in
-            print(string)
-        }
-        
+        }.cURLDescription(calling: { curl in
+            Logger.log(event: .info, curl)
+        })
 		return promise.future
-			
 	}
 	
 	/// Make POST request to the given path with JSON body encoding

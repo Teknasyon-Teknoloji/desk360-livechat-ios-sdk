@@ -20,7 +20,7 @@ final class ChatAgentView: UIView, Layoutable {
 	
 	lazy var typingInfolabel: UILabel = {
 		let label = UILabel()
-		label.textColor = config?.general.headerTitleColor.uiColor
+        label.textColor = .white
 		label.font = FontFamily.Gotham.book.font(size: 11)
 		// label.text = "Typing..."
 		return label
@@ -28,22 +28,23 @@ final class ChatAgentView: UIView, Layoutable {
 	
 	lazy var agentNameLabel: UILabel = {
 		let label = UILabel()
-		label.textColor = config?.general.headerTitleColor.uiColor
+        label.textColor = .white
 		label.font = FontFamily.Gotham.medium.font(size: 20)
-		label.text = "Ali Hilal"
 		return label
 	}()
 	
 	lazy var backButton: ActionButton = {
 		let button = ActionButton(type: .system)
-		button.setImage(Images.back, for: .normal)
+        let image = Images.back.tinted(with: config?.general.headerTitleColor.uiColor)
+		button.setImage(image, for: .normal)
 		button.setSize(.init(width: 24, height: 24))
 		return button
 	}()
 	
 	lazy var optionsButton: UIButton = {
 		let button = UIButton(type: .system)
-		button.setImage(Images.options, for: .normal)
+        let image = Images.options.tinted(with: config?.general.headerTitleColor.uiColor)
+		button.setImage(image, for: .normal)
 		button.setSize(.init(width: 24, height: 24))
 		return button
 	}()
@@ -103,29 +104,40 @@ final class ChatAgentView: UIView, Layoutable {
 	}
 	
 	func configure(with agent: Agent?) {
+        setAgentImage(agent)
 		if let agent = agent {
 			agentStatusIndicator.isHidden = false
 			typingInfolabel.isHidden = false
 			agentNameLabel.text = agent.name
             typingInfolabel.text = Strings.online
-            
-			guard let avatarUrl = URL(string: agent.avatar) else {
-                agentAvatarView.image = Images.avatarPlacegolder
-				return
-			}
-			agentAvatarView.kf.setImage(with: avatarUrl)
 		} else {
-            typingInfolabel.text = Strings.offline
+            typingInfolabel.text = config?.offline.headerText
 			agentStatusIndicator.isHidden = true
 			agentNameLabel.text = config?.general.brandName ?? Storage.settings.object?.applicationName
-			guard let avatarUrl = URL(string: config?.general.brandLogo ?? "") else {
-                agentAvatarView.image = Images.avatarPlacegolder
-                return
-            }
-			agentAvatarView.kf.setImage(with: avatarUrl)
 		}
-        
 	}
+    
+    private func setAgentImage(_ agent: Agent?) {
+        guard let url = avatarURL(agent: agent) else {
+            // agentAvatar.image = Images.avatarPlacegolder
+            agentAvatarView.kf.setImage(with: URL(string: Storage.settings.object?.defaultBrandLogo ?? ""))
+            return
+        }
+        
+        agentAvatarView.kf.setImage(with: url, placeholder: Images.avatarPlacegolder)
+    }
+    
+    private func avatarURL(agent: Agent?) -> URL? {
+        let shouldShowAvatar = config?.general.agentPictureStatus ?? false
+        if let agent = agent, let avatarUrl = URL(string: agent.avatar), shouldShowAvatar {
+            return avatarUrl
+        } else if let avatarUrl = URL(string: config?.general.brandLogo ?? Storage.settings.object?.applicationLogo ?? "") {
+            // agentAvatarView.image = Images.avatarPlacegolder
+            agentAvatarView.kf.setImage(with: URL(string: Storage.settings.object?.defaultBrandLogo ?? ""))
+            return avatarUrl
+        }
+        return nil
+    }
 }
 
 extension Agent.Status {

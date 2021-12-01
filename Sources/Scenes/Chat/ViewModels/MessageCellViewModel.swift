@@ -59,6 +59,12 @@ class MessageCellViewModel: MessageViewModelType, Diffable {
 	
 	var uploadProgress: ((CGFloat) -> Void)?
 	
+    var showingProgressBar: Bool {
+        if case .video = kind { return true }
+        if case .document = kind { return true }
+        return false
+    }
+    
 	func setProgress(_ progress: CGFloat) {
 		uploadProgress?(progress)
 	}

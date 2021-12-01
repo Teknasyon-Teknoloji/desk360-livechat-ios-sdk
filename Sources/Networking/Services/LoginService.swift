@@ -50,17 +50,22 @@ final class LoginProviding: LoginProvider {
 }
 
 extension Endpoint {
+    private static var notificationsParams: [URLQueryItem] = [
+        .init(name: "uuid", value: Desk360LiveChat.shared.deviceID),
+        .init(name: "push_token", value: Desk360LiveChat.shared.pushToken)
+    ]
+    
 	static var login: Endpoint {
 		return Endpoint(
 			path: "/api/v1/chat/sdk/session",
-			queryItems: []
+			queryItems: notificationsParams
 		)
 	}
 	
 	static var chatbotSession: Endpoint {
 		Endpoint(
 			path: "/api/v1/chatbots/create/session",
-			queryItems: []
+			queryItems: notificationsParams
 		)
 	}
 }

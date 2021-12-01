@@ -26,7 +26,7 @@ class BaseViewController: UIViewController, AlertShowing {
     
 	func setupAppearnace() {
 		UIApplication.shared.statusBarUIView?.backgroundColor = config?.general.backgroundHeaderColor.uiColor
-		view.backgroundColor = config?.general.backgroundColor.uiColor
+		view.backgroundColor = config?.general.backgroundMainColor.uiColor
         navigationController?.navigationBar.isHidden = true
         navigationController?.setNavigationBarHidden(true, animated: false)
 	}

@@ -36,6 +36,8 @@ struct Storage {
 
     static let langaugeCode = SingleUserDefaultsStore<String>(uniqueIdentifier: .langaugeCode)!
     
+    static let pushToken = SingleUserDefaultsStore<String>(uniqueIdentifier: .pushToken)!
+    
     static func clear() {
         settings.delete()
         appKey.delete()
@@ -97,5 +99,8 @@ private extension String {
     static private(set) var host = "host"
     
     @StorageKey
-    static private(set) var langaugeCode = "langaugeCode"
+    static private(set) var langaugeCode = "langauge_code"
+    
+    @StorageKey
+    static private(set) var pushToken = "push_token"
 }

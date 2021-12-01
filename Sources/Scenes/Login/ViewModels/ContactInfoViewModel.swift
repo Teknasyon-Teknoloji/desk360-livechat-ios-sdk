@@ -57,6 +57,7 @@ final class ContactInfoViewModel {
 	
 	func sendOfflineMessage(
         _ message: String,
+        customFields: [String: String],
         with credentials: Credentials
     ) -> Future<Void, Error> {
 		let message = OfflineMessage(
@@ -68,7 +69,7 @@ final class ContactInfoViewModel {
         
         isSendingMessage = true
 		return messageProvider
-			.sendOfflineMessage(message)
+            .sendOfflineMessage(message, customFields: customFields)
 			.map { _ in
                 self.isSendingMessage = false
 				self.router?.trigger(.offlineMessage)

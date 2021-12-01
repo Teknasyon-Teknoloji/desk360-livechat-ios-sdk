@@ -18,22 +18,30 @@ protocol MessagingProvider {
 	func send(message: Message) -> Future<Message, Error>
 	func enqueue(message: Message)
 	func updateMyMessageStatus(newStatus: Message.Status, messageID: String)
-    func listenForMessages(completion: @escaping((MessagingResult) -> Void), agent: (@escaping (Agent?) -> Void), ended: ((Bool) -> Void)?)
+    func listenForMessages(ofSession sessionID: String, completion: @escaping((MessagingResult) -> Void), agent: (@escaping (Agent?) -> Void), ended: ((Bool) -> Void)?)
 	func setAttachments(for messageID: String, attachments: Attachment)
-	func sendOfflineMessage(_ message: OfflineMessage) -> Future<JSONAny?, Error>
+    func sendOfflineMessage(_ message: OfflineMessage, customFields: [String: String]) -> Future<JSONAny?, Error>
 	func sendChatBootMessage(message: String) -> Future<JSONAny?, Error>
 	func listenFortypingEvents(from agentID: Int, completion: @escaping(Bool) -> Void)
 	func sendTypingEvents()
+    func shouldRecieveNotifications(_ value: Bool)
 }
 
 final class MessagingProviding: MessagingProvider {
-	 
+    
     private var dataBase: Database { .liveChatDB }
-	
+    
     private let debouncer = Debouncer(delay: 0.25, queue: .global(qos: .background))
-	private var oldMessages = [Message]()
-	// private var messageQueue = [Message]()
-	
+    private var oldMessages = [Message]()
+    // private var messageQueue = [Message]()
+    
+    func shouldRecieveNotifications(_ value: Bool) {
+        let uid = Auth.liveChat.currentUser?.uid ?? ""
+        dataBase
+            .reference(to: .agent(uid: uid))
+            .updateChildValues(["notifications": value])
+    }
+
 	func enqueue(message: Message) {
 		// oldMessages.
 	}
@@ -78,35 +86,6 @@ final class MessagingProviding: MessagingProvider {
 					return
 				}
                 promise.succeed(value: message)
-//				ref.getData { error, snapshot in
-//					if let error = error {
-//						Logger.logError(error)
-//						return
-//					}
-//
-//					guard let messagesDic = snapshot.value as? [String: [String: Any]] else {
-//						Logger.log(event: .error, "Could not decode messages")
-//						return
-//					}
-//
-//					for aMessage in messagesDic.map({ $0.value }) where aMessage is [String: [String: Any]] {
-//						let mssgs = aMessage.compactMap { key, value -> [String: Any]? in
-//							var _message = value as? [String: Any]
-//							_message?["id"] = key
-//							return _message
-//						}
-//
-//						mssgs.forEach { json in
-//							guard let msg = Message(from: json) else {
-//								promise.fail(error: AnyError(message: "An error occured"))
-//								return
-//							}
-//							promise.succeed(value: msg)
-//
-//						}
-//
-//					}
-//				}
 			}
 		
 		return promise.future
@@ -114,8 +93,8 @@ final class MessagingProviding: MessagingProvider {
     
     var isEnded = false
     
-	func listenForMessages(completion: @escaping((MessagingResult) -> Void), agent: (@escaping (Agent?) -> Void), ended: ((Bool) -> Void)?) {
-        let uid = Auth.liveChat.currentUser?.uid ?? ""
+	func listenForMessages(ofSession sessionID: String, completion: @escaping((MessagingResult) -> Void), agent: (@escaping (Agent?) -> Void), ended: ((Bool) -> Void)?) {
+       
         DispatchQueue.global(qos: .background).async {
             let cachedMessages = Storage.mesaagesCache.allObjects()
             let changes = MessagesDiffer.diff(old: self.oldMessages, new: cachedMessages)
@@ -123,10 +102,10 @@ final class MessagingProviding: MessagingProvider {
         }
         
         dataBase
-            .reference(withPath: "messages/\(uid)").removeAllObservers()
+            .reference(withPath: "messages/\(sessionID)").removeAllObservers()
         
         dataBase
-			.reference(withPath: "messages/\(uid)")
+			.reference(withPath: "messages/\(sessionID)")
             .observe(.value) { snapshot in
 				// Logger.log(event: .info, "LISTEN ", snapshot.value ?? 0)
 				guard let messagesDic = snapshot.value as? [String: [String: Any]] else {
@@ -202,8 +181,10 @@ final class MessagingProviding: MessagingProvider {
 		}
 	}
 	
-	func sendOfflineMessage(_ message: OfflineMessage) -> Future<JSONAny?, Error> {
-		HttpClient.shared.post(to: .offlineMessage, parameters: message.toJSON())
+	func sendOfflineMessage(_ message: OfflineMessage, customFields: [String: String]) -> Future<JSONAny?, Error> {
+        var params = message.toJSON()
+        params.combine(with: customFields)
+		return HttpClient.shared.post(to: .offlineMessage, parameters: params)
 	}
 	
 	func sendChatBootMessage(message: String) -> Future<JSONAny?, Error> {

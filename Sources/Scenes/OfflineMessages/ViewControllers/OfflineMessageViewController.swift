@@ -24,22 +24,11 @@ final class OfflineMessageViewController: BaseViewController, Layouting, ViewMod
 		view = ViewType.create()
 	}
 	
-//	override func viewWillAppear(_ animated: Bool) {
-//		super.viewWillAppear(animated)
-//		navigationController?.navigationBar.isHidden = false
-//		navigationController?.setNavigationBarHidden(false, animated: true)
-//	}
-//	
-//	override func viewWillDisappear(_ animated: Bool) {
-//		super.viewWillDisappear(animated)
-//		navigationController?.navigationBar.isHidden = true
-//		navigationController?.setNavigationBarHidden(true, animated: true)
-//	}
-	
 	override func setupAppearnace() {
 		super.setupAppearnace()
         layoutableView.agentView.optionsButton.isHidden = true
         layoutableView.agentView.configure(with: nil)
+        layoutableView.backgroundColor = .white
 	}
 	
 	override func bindViewModel() {

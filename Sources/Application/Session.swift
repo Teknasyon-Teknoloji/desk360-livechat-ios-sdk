@@ -26,9 +26,8 @@ final class Session {
     
     static func checkValidity() {
         if isExpired {
-            terminate()
+            terminate(forceDeleteCreds: false)
             Storage.token.delete()
-           // Storage.credentails.delete()
         }
     }
     
@@ -98,38 +97,6 @@ final class Session {
             return login(using: credentials)
         }
         
-        return promise.future
-    }
-    
-    func startFlowWithoutCredentials() -> Future<Void, Error> {
-        let promise = Promise<Void, Error>()
-        
-        if let token = Session.token {
-            loginToFirebase(using: token)
-                .on { _ in
-                    promise.succeed(value: ())
-                } failure: { error in
-                    if let cred = Storage.credentails.object {
-                         self.login(using: cred).on { _ in
-                            promise.succeed(value: ())
-                         }
-                    } else {
-                        promise.fail(error: AnyError(message: "Failed to authenticate"))
-                        // return promise.future
-                    }
-                }
-            //                .ifFailsFlatMap { error in
-            //                    if let cred = Storage.credentails.object {
-            //                        return self.login(using: cred)
-            //                    } else {
-            //                        promise.fail(error: AnyError(message: "failed to autuntiate"))
-            //                        return promise.future
-            //                    }
-            //                }
-        } else {
-            promise.succeed(value: ())
-          //  return promise.future
-        }
         return promise.future
     }
     

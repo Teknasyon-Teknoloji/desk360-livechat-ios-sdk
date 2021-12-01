@@ -13,12 +13,17 @@ final class SessionTerminationView: UIView, Layoutable {
 		ChatAgentView.create()
 	}()
 	
+    private lazy var desk360LogoView: Desk360View = {
+        let imageView = Desk360View()
+        return imageView
+    }()
+    
 	private lazy var messageTitle: UILabel = {
 		let label = UILabel()
 		label.font = FontFamily.Gotham.medium.font(size: 20)
 		label.text = config?.feedback.headerTitle
 		label.textAlignment = .center
-        label.textColor = config?.general.sectionHeaderTextColor.uiColor
+        label.textColor = config?.general.sectionHeaderTitleColor.uiColor
 		return label
 	}()
 	
@@ -27,7 +32,7 @@ final class SessionTerminationView: UIView, Layoutable {
 		label.numberOfLines = 0
 		label.font = FontFamily.Gotham.book.font(size: 16)
 		label.text = config?.feedback.headerText
-        label.textColor = config?.general.sectionHeaderTitleColor.uiColor
+        label.textColor = config?.general.sectionHeaderTextColor.uiColor
 		label.clipsToBounds = true
 		label.textAlignment = .center
 		return label
@@ -131,7 +136,8 @@ final class SessionTerminationView: UIView, Layoutable {
 		// addSubview(transcriptStack)
 		addSubview(startNewChatButton)
 		addSubview(feedbackSuccessLabel)
-		
+		addSubview(desk360LogoView)
+        
 		likeButton.setSize(.init(width: 74, height: 74))
 		dislikeButton.setSize(.init(width: 74, height: 74))
 		
@@ -166,14 +172,6 @@ final class SessionTerminationView: UIView, Layoutable {
 			padding: .init(v: 20, h: 20)
 		)
 		
-//		transcriptStack.anchor(
-//			top: ratingStack.bottomAnchor,
-//			leading: leadingAnchor,
-//			bottom: nil,
-//			trailing: trailingAnchor,
-//			padding: .init(v: 20, h: 20)
-//		)
-		
 		startNewChatButton.centerXToSuperview()
 		startNewChatButton.anchor(
 			top: ratingStack.bottomAnchor,
@@ -182,6 +180,14 @@ final class SessionTerminationView: UIView, Layoutable {
 		)
         
         sendSubviewToBack(startNewChatButton)
+        desk360LogoView
+            .anchor(
+                top: nil,
+                leading: leadingAnchor,
+                bottom: safeAreaLayoutGuide.bottomAnchor,
+                trailing: trailingAnchor,
+                size: .init(width: frame.width, height: 44)
+            )
 	}
 	
 	func setupViews() {
