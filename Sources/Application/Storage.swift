@@ -22,6 +22,8 @@ struct Storage {
     
     static let credentails = SingleUserDefaultsStore<Credentials>(uniqueIdentifier: .credentails)!
 	
+	static let smartPlug = SingleUserDefaultsStore<SmartPlug>(uniqueIdentifier: .smartPlugs)!
+	
     static let messageStore = FilesStore<ChatMediaItem>(uniqueIdentifier: .attachments)
     
     static let expireDate = SingleUserDefaultsStore<Date>(uniqueIdentifier: .tokenExpiryDate)!
@@ -76,6 +78,9 @@ private extension String {
     
     @StorageKey
     static private(set) var credentails = "credentails"
+	
+	@StorageKey
+	static private(set) var smartPlugs = "smart_plugs"
     
     @StorageKey
     static private(set) var messageStore = "message_store"

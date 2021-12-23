@@ -57,13 +57,16 @@ class HttpClient {
 	///   - path: the end point path
 	///   - parameters: The json body parameters
 	/// - Returns: The decoded response
-	func post<T: Codable>(to endpoint: Endpoint, parameters: [String: String]) -> Future<T, Error> {
+	func post<T: Codable>(to endpoint: Endpoint, parameters: [String: Encodable]) -> Future<T, Error> {
 		let promise = Promise<T, Error>()
+		
+		let params: [String: EncodableValue] = parameters.mapValues { .init($0) }
+		
 		AF.request(
 			endpoint.url,
 			method: .post,
-			parameters: parameters,
-			encoder: URLEncodedFormParameterEncoder(destination: .queryString),
+			parameters: params,
+			encoder: JSONParameterEncoder(encoder: JSONEncoder()),
 			headers: headers,
 			interceptor: interceptor
 		).cURLDescription(calling: { curl in

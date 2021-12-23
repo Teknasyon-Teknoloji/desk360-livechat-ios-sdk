@@ -26,15 +26,18 @@ enum MainRoute: Route {
 final class AppCoordinator: Coordinator<MainRoute> {
 
 	private let credentials: Credentials?
+	private let smartPlug: SmartPlug?
 	private let factory: ProvidersFactory
 	private let presenter: UIViewController
 	
 	init(
 		credentials: Credentials?,
+		smartPlug: SmartPlug? = nil,
 		factory: ProvidersFactory,
 		presenter: UIViewController
 	) {
 		self.credentials = credentials
+		self.smartPlug = smartPlug
 		self.factory = factory
 		self.presenter = presenter
 		super.init(router: Router())
@@ -76,6 +79,7 @@ final class AppCoordinator: Coordinator<MainRoute> {
 				router: self,
 				loginProvider: factory.makeLoginProvider(),
 				credentials: credentials,
+				smartPlug: self.smartPlug,
 				agentProvider: factory.makeAgentProvider(),
 				messageProvider: factory.makeMessagingProvider(),
 				isOnline: isOnline
