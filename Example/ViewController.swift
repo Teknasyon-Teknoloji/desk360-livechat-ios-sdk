@@ -19,7 +19,7 @@ class ViewController: UIViewController {
     /// The Label
     lazy var label: UILabel = {
         let label = UILabel()
-        label.text = "🚀\nLiveChat\nExample"
+        label.text = "🚀\nDesk360LiveChat\nExample"
         label.font = .systemFont(ofSize: 25, weight: .semibold)
         label.numberOfLines = 0
         label.lineBreakMode = .byWordWrapping
