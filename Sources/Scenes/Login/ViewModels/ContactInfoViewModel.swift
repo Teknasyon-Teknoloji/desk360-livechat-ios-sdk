@@ -16,6 +16,7 @@ final class ContactInfoViewModel {
 	private let messageProvider: MessagingProvider
 	
 	let credentials: Credentials?
+	let smartPlug: SmartPlug?
 	private(set) var isOnline: Bool
     private var isSendingMessage: Bool = false
     
@@ -30,6 +31,7 @@ final class ContactInfoViewModel {
 		router: Coordinator<MainRoute>?,
 		loginProvider: LoginProvider,
 		credentials: Credentials?,
+		smartPlug: SmartPlug? = nil,
 		agentProvider: AgentProvider,
 		messageProvider: MessagingProvider,
 		isOnline: Bool
@@ -37,6 +39,7 @@ final class ContactInfoViewModel {
 		self.router = router
 		self.loginProvider = loginProvider
 		self.credentials = credentials
+		self.smartPlug = smartPlug
 		self.agentProvider = agentProvider
 		self.messageProvider = messageProvider
 		self.isOnline = isOnline
@@ -46,10 +49,11 @@ final class ContactInfoViewModel {
 	func login(using name: String, email: String) -> Future<Void, Error> {
 		let creds = Credentials(name: name, email: email)
         return Session.shared
-            .startFlowWith(credentials: creds)
+			.startFlowWith(credentials: creds, smartPlug: self.smartPlug)
 			.flatMap(getOnlineAgent)
 			.observe(on: .main)
 			.map { agent in
+				print("Agent =>", agent)
 				// guard let agent = agent else { return }
 				self.router?.trigger(.chat(agent: agent, user: creds))
 			}

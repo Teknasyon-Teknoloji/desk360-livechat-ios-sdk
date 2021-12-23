@@ -48,6 +48,7 @@ final class SessionTerminationViewModel {
     func startNewChat() {
         Session.terminate(forceDeleteCreds: false)
         var credentails: Credentials
+		var smartPlugs: SmartPlug?
         if let creds = self.credentials {
             credentails = creds
         } else if let creds = Storage.credentails.object {
@@ -56,11 +57,12 @@ final class SessionTerminationViewModel {
             self.backToRoot()
             return
         }
+		
         let agentProvider = ProvidersFactory().makeAgentProvider()
         statusHandler?(.loading)
         Session
             .shared
-            .login(using: credentails)
+            .login(using: credentails, smartPlug: nil)
             .flatMap { agentProvider.checkOnlineAgent(for: Storage.settings.object?.companyID ?? -1) }
             .map { self.isOnlineAgent = $0 }
             .flatMap { agentProvider.getOnlineAgentInfo(uid: Session.ID) }

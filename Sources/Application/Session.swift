@@ -79,14 +79,14 @@ final class Session {
         return Storage.token.object()
     }
     
-    func startFlowWith(credentials: Credentials) -> Future<Void, Error> {
+	func startFlowWith(credentials: Credentials, smartPlug: SmartPlug? = nil) -> Future<Void, Error> {
         let promise = Promise<Void, Error>()
         
         if !Session.isExpired, let token = Session.token {
             loginToFirebase(using: token).on { _ in
                 promise.succeed(value: ())
             } failure: { error in
-                self.login(using: credentials).on { _ in
+                self.login(using: credentials, smartPlug: smartPlug).on { _ in
                     promise.succeed(value: ())
                 } failure: { error in
                     promise.fail(error: error)
@@ -94,14 +94,14 @@ final class Session {
             }
             
         } else {
-            return login(using: credentials)
+            return login(using: credentials, smartPlug: smartPlug)
         }
         
         return promise.future
     }
     
-    func login(using credentials: Credentials) -> Future<Void, Error> {
-        getLoginToken(for: credentials)
+	func login(using credentials: Credentials, smartPlug: SmartPlug?) -> Future<Void, Error> {
+        getLoginToken(for: credentials, smartPlug: smartPlug)
             .flatMap(loginToFirebase(using:))
     }
     
@@ -109,10 +109,13 @@ final class Session {
         loginProvider.authenticateSession(with: token)
     }
     
-    private func getLoginToken(for credentials: Credentials) -> Future<Token, Error> {
-        loginProvider.login(using: credentials)
+	private func getLoginToken(for credentials: Credentials, smartPlug: SmartPlug?) -> Future<Token, Error> {
+		loginProvider.login(using: credentials, smartPlugs: smartPlug)
             .map { $0.token }
-            .map(saveLoginToken(_:))
+			.map { token in
+				Logger.log(event: .info, "HELLO \(token)")
+				return self.saveLoginToken(token)
+			}
     }
     
     private func saveLoginToken(_ token: Token) -> Token {
