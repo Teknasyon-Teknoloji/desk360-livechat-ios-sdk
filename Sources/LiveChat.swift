@@ -17,22 +17,19 @@ public struct LiveChatProperties {
     public let deviceID: String
     public let language: String?
     public let loginCredentials: Credentials?
-	public let smartPlug: SmartPlug?
     
     public init(
         appKey: String,
         host: String,
         deviceID: String,
         language: String? = nil,
-        loginCredentials: Credentials? = nil,
-		smartPlug: SmartPlug? = nil
+        loginCredentials: Credentials? = nil
     ) {
         self.appKey = appKey
         self.host = host
         self.deviceID = deviceID
         self.language = language
         self.loginCredentials = loginCredentials
-		self.smartPlug = smartPlug
     }
 }
 
@@ -80,7 +77,6 @@ public final class Desk360LiveChat {
         
         appCoordinator = AppCoordinator(
             credentials: properites.loginCredentials,
-			smartPlug: properites.smartPlug,
             factory: ProvidersFactory(),
             presenter: viewController
         )
@@ -93,13 +89,8 @@ public final class Desk360LiveChat {
         } else {
             Storage.credentails.delete()
         }
-			
-		if let smartPlugs = properites.smartPlug {
-			try? Storage.smartPlug.save(smartPlugs)
-		} else {
-			Storage.smartPlug.delete()
-		}
        
+        
         appCoordinator?.trigger(.bootstrap)
     }
     

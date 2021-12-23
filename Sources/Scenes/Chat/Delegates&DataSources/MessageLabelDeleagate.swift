@@ -606,7 +606,7 @@ enum MessageTextCheckingType {
     case custom(pattern: String, match: String?)
 }
 
-// swiftlint:disable shorthand_operator, force_cast
+// swiftlint:disable shorthand_operator
 extension UILabel {
     func getSeparatedLines() -> [String] {
         if self.lineBreakMode != NSLineBreakMode.byWordWrapping {
@@ -630,8 +630,8 @@ extension UILabel {
         guard let lines = CTFrameGetLines(frame) as? [Any] else { return linesArray }
         
         for line in lines {
-			let lineRef = (line as! CTLine)
-			let lineRange: CFRange = CTLineGetStringRange(lineRef)
+            let lineRef = line as! CTLine
+            let lineRange: CFRange = CTLineGetStringRange(lineRef)
             let range = NSRange(location: lineRange.location, length: lineRange.length)
             let lineString: String = (text as NSString).substring(with: range)
             linesArray.append(lineString)

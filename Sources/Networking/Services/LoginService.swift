@@ -11,7 +11,7 @@ import FirebaseCore
 import Foundation
 
 protocol LoginProvider {
-	func login(using credential: Credentials, smartPlugs: SmartPlug?) -> Future<AuthResponse, Error>
+    func login(using credential: Credentials) -> Future<AuthResponse, Error>
     func authenticateSession(with token: Token) -> Future<Void, Error>
 }
 
@@ -22,13 +22,8 @@ final class LoginProviding: LoginProvider {
 		self.client = client
 	}
 	
-	func login(using credential: Credentials, smartPlugs: SmartPlug? = nil) -> Future<AuthResponse, Error> {
-		var params: [String: Encodable] = ["name": credential.name, "email": credential.email, "source": "iOS"]
-		
-		if let smartPlugs = smartPlugs {
-			params["settings"] = smartPlugs.settings
-		}
-		
+	func login(using credential: Credentials) -> Future<AuthResponse, Error> {
+		let params = ["name": credential.name, "email": credential.email, "source": "iOS"]
 		if let chatbot = Storage.settings.object?.chatbot, chatbot == true {
 			return client.post(to: .chatbotSession, parameters: params).mapError({
 				Logger.logError($0)
@@ -47,7 +42,7 @@ final class LoginProviding: LoginProvider {
 				Logger.logError(error)
 				promise.fail(error: error)
 			}
-			Logger.log(event: .success, "Firebase Session Key: \(res?.user.uid)")
+			Logger.log(event: .success, "Firebase Session Key: \(res?.user.uid)"  )
 			promise.succeed(value: ())
 		}
 		return promise.future

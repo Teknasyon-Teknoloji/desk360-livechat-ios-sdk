@@ -114,7 +114,7 @@ final class MainViewModel {
 		statusHandler?(.loading)
         Session
             .shared
-            .login(using: credentails, smartPlug: nil).on { _ in
+            .login(using: credentails).on { _ in
                 self.statusHandler?(.showingData)
                 guard let agent = self.agent else {
                    return

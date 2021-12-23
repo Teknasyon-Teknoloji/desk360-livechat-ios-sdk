@@ -47,6 +47,7 @@ class BootstrappingViewModel {
         if hasValidSettingsSaved, let settings = Storage.settings.object {
             initFirebase(using: settings.firebaseConfig)
             router?.trigger(.intro)
+            return getSettings()
         }
         return getSettings()
     }
