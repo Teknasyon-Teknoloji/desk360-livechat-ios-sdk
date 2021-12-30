@@ -1,9 +1,6 @@
 # Desk360 Chat iOS SDK
 
-[![Swift Version](https://img.shields.io/badge/Swift-5.2.x-orange.svg)](https://swift.org)
-[![CocoaPods Compatible](https://img.shields.io/cocoapods/p/Desk360LiveChat.svg?style=flat)](http://cocoapods.org/pods/Desk360LiveChat)  
-
-![CocoaPods Compatible](https://img.shields.io/cocoapods/v/Desk360LiveChat?style=plastic)
+[![Swift Version](https://img.shields.io/badge/Swift-5.2.x-orange.svg)](https://swift.org) [![CocoaPods Compatible](https://img.shields.io/cocoapods/p/Desk360LiveChat.svg?style=flat)](http://cocoapods.org/pods/Desk360LiveChat)   ![CocoaPods Compatible](https://img.shields.io/cocoapods/v/Desk360LiveChat?style=plastic)
 
 
 <p align="center">
