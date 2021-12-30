@@ -20,7 +20,7 @@ protocol MessagingProvider {
 	func updateMyMessageStatus(newStatus: Message.Status, messageID: String)
     func listenForMessages(ofSession sessionID: String, completion: @escaping((MessagingResult) -> Void), agent: (@escaping (Agent?) -> Void), ended: ((Bool) -> Void)?)
 	func setAttachments(for messageID: String, attachments: Attachment)
-    func sendOfflineMessage(_ message: OfflineMessage, customFields: [String: String]) -> Future<JSONAny?, Error>
+	func sendOfflineMessage(_ message: OfflineMessage, customFields: [String: String], smartPlugs: SmartPlug?) -> Future<JSONAny?, Error>
 	func sendChatBootMessage(message: String) -> Future<JSONAny?, Error>
 	func listenFortypingEvents(from agentID: Int, completion: @escaping(Bool) -> Void)
 	func sendTypingEvents()
@@ -181,9 +181,14 @@ final class MessagingProviding: MessagingProvider {
 		}
 	}
 	
-	func sendOfflineMessage(_ message: OfflineMessage, customFields: [String: String]) -> Future<JSONAny?, Error> {
+	func sendOfflineMessage(_ message: OfflineMessage, customFields: [String: String], smartPlugs: SmartPlug? = nil) -> Future<JSONAny?, Error> {
         var params = message.toJSON()
         params.combine(with: customFields)
+		
+		if let smartPlugs = smartPlugs {
+			params["settings"] = smartPlugs.settings
+		}
+		
 		return HttpClient.shared.post(to: .offlineMessage, parameters: params)
 	}
 	
