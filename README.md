@@ -1,23 +1,10 @@
 # Desk360 Chat iOS SDK
 
-<p align="center">
-   <a href="https://developer.apple.com/swift/">
+[![Swift Version](https://img.shields.io/badge/Swift-5.2.x-orange.svg)](https://swift.org)
+[![CocoaPods Compatible](https://img.shields.io/cocoapods/p/Desk360LiveChat.svg?style=flat)](http://cocoapods.org/pods/Desk360LiveChat)  
 
-      <img src="https://img.shields.io/badge/Swift-5.2-orange.svg?style=flat" alt="Swift 5.2">
+![CocoaPods Compatible](https://img.shields.io/cocoapods/v/Desk360LiveChat?style=plastic)
 
-   </a>
-   <a href="http://cocoapods.org/pods/Desk360LiveChat">
-
-      <img src="https://img.shields.io/cocoapods/v/Desk360LiveChat.svg?style=flat" alt="Version">
-
-   </a>
-   <a href="http://cocoapods.org/pods/Desk360LiveChat">
-
-      <img src="https://img.shields.io/cocoapods/p/Desk360LiveChat.svg?style=flat" alt="Platform">
-
-   </a>
-
-</p>
 
 <p align="center">
 Desk360 Chat SDK  provides simplicity and usability in one place. With this feature, you can provide live support to your customers directly within your app just by writing a few lines of code.
