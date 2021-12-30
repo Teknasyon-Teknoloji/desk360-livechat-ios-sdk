@@ -13,7 +13,7 @@ struct OfflineMessage {
 	let email: String
 	let message: String
 	
-	func toJSON() -> [String: String] {
+	func toJSON() -> [String: Encodable] {
 		[
 			"name": name,
 			"email": email,

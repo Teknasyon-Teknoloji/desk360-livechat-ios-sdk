@@ -73,7 +73,7 @@ final class ContactInfoViewModel {
         
         isSendingMessage = true
 		return messageProvider
-            .sendOfflineMessage(message, customFields: customFields)
+			.sendOfflineMessage(message, customFields: customFields, smartPlugs: self.smartPlug)
 			.map { _ in
                 self.isSendingMessage = false
 				self.router?.trigger(.offlineMessage)
