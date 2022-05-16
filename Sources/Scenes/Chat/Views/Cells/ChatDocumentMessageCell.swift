@@ -9,6 +9,12 @@ import UIKit
 
 final class ChatDocumentMessageCell: ChatBaseCell {
 	
+	override var viewModel: MessageCellViewModel? {
+		didSet {
+			updateUI()
+		}
+	}
+	
 	lazy var fileFormatIcon: UIImageView = {
 		let imageView = UIImageView()
 		imageView.image = Images.aviIcon.withRenderingMode(.alwaysOriginal)
@@ -100,99 +106,6 @@ final class ChatDocumentMessageCell: ChatBaseCell {
         bubbleView.addSubview(messageLabel)
 	}
 	
-	override func layoutViews() {
-		super.layoutViews()
-    
-        if let vm = viewModel, vm.message.content.isEmpty == false {
-            messageLabel.text = vm.message.content
-            messageLabel.anchor(
-                top: nil,
-                leading: bubbleView.leadingAnchor,
-                bottom: bubbleView.bottomAnchor,
-                trailing: bubbleView.trailingAnchor,
-                padding: .init(v: 10, h: 10)
-            )
-            
-            fileStack.anchor(
-                top: bubbleView.topAnchor,
-                leading: bubbleView.leadingAnchor,
-                bottom: messageLabel.topAnchor,
-                trailing: bubbleView.trailingAnchor,
-                padding: .init(v: 0, h: 10),
-                size: .init(width: 0, height: 50)
-            )
-           
-            tickAndTimeStack.removeFromSuperview()
-            messageLabel.addSubview(tickAndTimeStack)
-            
-            let lineWidth = messageLabel.lastLineWidth
-            bringSubviewToFront(tickAndTimeStack)
-                    
-            if lineWidth <= bubbleView.frame.width * 0.8 && messageLabel.numberOfLines > 1 {
-                tickAndTimeStack.anchor(
-                    top: nil,
-                    leading: messageLabel.trailingAnchor,
-                    bottom: messageLabel.bottomAnchor,
-                    trailing: bubbleView.trailingAnchor,
-                    padding: .init(top: 4, left: 8, bottom: 0, right: 4)
-                )
-            } else {
-                let extraInset: CGFloat = 4
-                tickAndTimeStack.anchor(
-                    top: nil,
-                    leading: nil,
-                    bottom: bubbleView.bottomAnchor,
-                    trailing: messageLabel.trailingAnchor,
-                    padding: .init(top: -12, left: 8, bottom: 8, right: 4 + extraInset)
-                )
-            }
-            
-        } else {
-            fileStack.anchor(
-                top: bubbleView.topAnchor,
-                leading: bubbleView.leadingAnchor,
-                bottom: bubbleView.bottomAnchor,
-                trailing: bubbleView.trailingAnchor,
-                padding: .init(v: 10, h: 10)
-            )
-            
-            tickAndTimeStack.anchor(
-                    top: nil,
-                    leading: nil,
-                    bottom: bubbleView.bottomAnchor,
-                    trailing: bubbleView.trailingAnchor,
-                    padding: .init(top: 2, left: 0, bottom: 6, right: 14)
-                )
-        }
-        
-		progressContainer.anchor(
-            top: bubbleView.bottomAnchor,
-            leading: bubbleView.leadingAnchor,
-            bottom: nil,
-            trailing: bubbleView.trailingAnchor,
-            padding: .init(top: 8, left: 10, bottom: 10, right: 10),
-            size: .init(width: bubbleView.frame.width, height: 40)
-        )
-		
-		progressBarView
-            .anchor(
-                top: progressContainer.topAnchor,
-                leading: progressContainer.leadingAnchor,
-                bottom: nil,
-                trailing: progressContainer.trailingAnchor,
-                padding: .init(v: 10, h: 10),
-                size: .init(width: bubbleView.frame.width, height: 2.5)
-            )
-		
-		progressLabel.anchor(
-            top: progressBarView.bottomAnchor,
-            leading: progressBarView.leadingAnchor,
-            bottom: progressContainer.bottomAnchor,
-            trailing: progressContainer.trailingAnchor,
-            padding: .init(v: 4, h: 10)
-        )
-	}
-
     override func prepareForReuse() {
         super.prepareForReuse()
         messageLabel.text = ""
@@ -222,6 +135,7 @@ final class ChatDocumentMessageCell: ChatBaseCell {
 			fileName.text = viewModel.message.mediaItem?.fileName
 			fileFormatIcon.image = viewModel.message.mediaItem?.thumbnail
 		}
+		self.viewModel = viewModel
         tickView.image = viewModel.state.image
 		dateLabel.isHidden = viewModel.isUploading
         tickView.isHidden = viewModel.isUploading || viewModel.isIncomingMessage
@@ -277,5 +191,102 @@ final class ChatDocumentMessageCell: ChatBaseCell {
 			return
 		}
 		delegate?.didTapFile(in: self, file: item)
+	}
+	
+	private func updateUI() {
+		if let vm = viewModel, !vm.message.content.isEmpty {
+			messageLabel.text = vm.message.content
+			
+			fileStack.anchor(
+				top: bubbleView.topAnchor,
+				leading: bubbleView.leadingAnchor,
+				bottom: nil,
+				trailing: bubbleView.trailingAnchor,
+				padding: .init(top: 10, left: 10, bottom: 0, right: 10),
+				size: .init(width: 0, height: 50)
+			)
+			
+			messageLabel.anchor(
+				top: fileStack.bottomAnchor,
+				leading: bubbleView.leadingAnchor,
+				bottom: nil,
+				trailing: bubbleView.trailingAnchor,
+				padding: .init(v: 0, h: 10)
+			)
+			
+			messageLabel.bottomAnchor.constraint(equalTo: bubbleView.bottomAnchor, constant: 10).isActive = true
+			tickAndTimeStack.removeFromSuperview()
+			messageLabel.addSubview(tickAndTimeStack)
+
+			let lineWidth = messageLabel.lastLineWidth
+			bringSubviewToFront(tickAndTimeStack)
+					
+			if lineWidth <= bubbleView.frame.width * 0.8 && messageLabel.numberOfLines > 1 {
+				tickAndTimeStack.anchor(
+					top: nil,
+					leading: messageLabel.trailingAnchor,
+					bottom: messageLabel.bottomAnchor,
+					trailing: bubbleView.trailingAnchor,
+					padding: .init(top: 4, left: 0, bottom: 0, right: 4)
+				)
+			} else {
+				let extraInset: CGFloat = 4
+				tickAndTimeStack.anchor(
+					top: messageLabel.bottomAnchor,
+					leading: nil,
+					bottom: nil,
+					trailing: messageLabel.trailingAnchor,
+					padding: .init(top: 6, left: 8, bottom: 0, right: 4 + extraInset)
+				)
+				
+				bubbleView.bottomAnchor.constraint(greaterThanOrEqualTo: tickAndTimeStack.bottomAnchor).isActive = true
+			}
+			
+		} else {
+			fileStack.anchor(
+				top: bubbleView.topAnchor,
+				leading: bubbleView.leadingAnchor,
+				bottom: nil,
+				trailing: bubbleView.trailingAnchor,
+				padding: .init(v: 10, h: 10),
+				size: .init(width: 0, height: 50)
+			)
+			
+			tickAndTimeStack.anchor(
+					top: nil,
+					leading: nil,
+					bottom: bubbleView.bottomAnchor,
+					trailing: bubbleView.trailingAnchor,
+					padding: .init(top: 2, left: 0, bottom: 6, right: 14)
+				)
+		}
+		guard !(viewModel?.isCached ?? false) else { return }
+		
+		progressContainer.anchor(
+			top: bubbleView.bottomAnchor,
+			leading: bubbleView.leadingAnchor,
+			bottom: nil,
+			trailing: bubbleView.trailingAnchor,
+			padding: .init(top: 8, left: 10, bottom: 10, right: 10),
+			size: .init(width: bubbleView.frame.width, height: 40)
+		)
+		
+		progressBarView
+			.anchor(
+				top: progressContainer.topAnchor,
+				leading: progressContainer.leadingAnchor,
+				bottom: nil,
+				trailing: progressContainer.trailingAnchor,
+				padding: .init(v: 10, h: 10),
+				size: .init(width: bubbleView.frame.width, height: 2.5)
+			)
+		
+		progressLabel.anchor(
+			top: progressBarView.bottomAnchor,
+			leading: progressBarView.leadingAnchor,
+			bottom: progressContainer.bottomAnchor,
+			trailing: progressContainer.trailingAnchor,
+			padding: .init(v: 4, h: 10)
+		)
 	}
 }

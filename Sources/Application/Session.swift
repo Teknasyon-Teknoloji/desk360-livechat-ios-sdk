@@ -38,7 +38,7 @@ final class Session {
         Storage.activeConversation.delete()
         Storage.token.delete()
         if forceDeleteCreds {
-            Storage.credentails.delete()
+            //Storage.credentails.delete()
         }
         try? Storage.isActiveConverationAvailable.save(false)
         try? Storage.mesaagesCache.deleteAll()
@@ -79,14 +79,14 @@ final class Session {
         return Storage.token.object()
     }
     
-	func startFlowWith(credentials: Credentials, smartPlug: SmartPlug? = nil) -> Future<Void, Error> {
+	func startFlowWith(credentials: Credentials, smartPlug: SmartPlug? = nil, path: Int? = nil, payload: [CannedResponsePayload]? = nil) -> Future<Void, Error> {
         let promise = Promise<Void, Error>()
         
         if !Session.isExpired, let token = Session.token {
             loginToFirebase(using: token).on { _ in
                 promise.succeed(value: ())
             } failure: { error in
-                self.login(using: credentials, smartPlug: smartPlug).on { _ in
+				self.login(using: credentials, smartPlug: smartPlug, path: path, payload: payload).on { _ in
                     promise.succeed(value: ())
                 } failure: { error in
                     promise.fail(error: error)
@@ -94,14 +94,14 @@ final class Session {
             }
             
         } else {
-            return login(using: credentials, smartPlug: smartPlug)
+			return login(using: credentials, smartPlug: smartPlug, path: path, payload: payload)
         }
         
         return promise.future
     }
     
-	func login(using credentials: Credentials, smartPlug: SmartPlug?) -> Future<Void, Error> {
-        getLoginToken(for: credentials, smartPlug: smartPlug)
+	func login(using credentials: Credentials, smartPlug: SmartPlug?, path: Int? = nil, payload: [CannedResponsePayload]? = nil) -> Future<Void, Error> {
+		getLoginToken(for: credentials, smartPlug: smartPlug, path: path, payload: payload)
             .flatMap(loginToFirebase(using:))
     }
     
@@ -109,8 +109,8 @@ final class Session {
         loginProvider.authenticateSession(with: token)
     }
     
-	private func getLoginToken(for credentials: Credentials, smartPlug: SmartPlug?) -> Future<Token, Error> {
-		loginProvider.login(using: credentials, smartPlugs: smartPlug)
+	private func getLoginToken(for credentials: Credentials, smartPlug: SmartPlug?, path: Int? = nil, payload: [CannedResponsePayload]?) -> Future<Token, Error> {
+		loginProvider.login(using: credentials, smartPlugs: smartPlug, path: path, payload: payload)
             .map { $0.token }
 			.map { token in
 				Logger.log(event: .info, "HELLO \(token)")

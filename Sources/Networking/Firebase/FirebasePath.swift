@@ -8,7 +8,7 @@
 import Foundation
 
 enum FirebasePath {
-	case online(companyID: Int)
+    case online(companyID: Int, applicationID: Int)
 	case agent(uid: String)
 	case readMessages(uid: String)
 	case sendMessages(uid: String, childID: String)
@@ -17,8 +17,8 @@ enum FirebasePath {
 	
 	var path: String {
 		switch self {
-		case .online(let companyID):
-			return "count/\(companyID)/online"
+        case .online(let companyID, let applicationID):
+			return "count/\(companyID)/\(applicationID)/online"
 		case .agent(let uid):
 			return "messages/\(uid)/session"
 		case .readMessages(let uid):

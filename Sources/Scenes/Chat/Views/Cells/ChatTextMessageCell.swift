@@ -9,6 +9,8 @@ import UIKit
 
 class ChatTextMessageCell: ChatBaseCell {
 	
+	var cannedResponseActive: Bool = false
+	
 	override func setupViews() {
 		super.setupViews()
 		bubbleView.addSubview(messageLabel)
@@ -16,6 +18,75 @@ class ChatTextMessageCell: ChatBaseCell {
 	
 	override func layoutViews() {
 		super.layoutViews()
+		
+	}
+	
+	
+	func cannedResonseConfigure(with viewModel: MessageCellViewModel) {
+		super.configure(with: viewModel)
+		
+		messageLabel.isFromCurrentuser = false
+		
+		if let attribute = CannedResponseAttributeCollector.shared.attribute(for: Int(viewModel.message.id) ?? 0) {
+			self.messageLabel.attributedText = attribute.attribute
+		}
+		
+		tickAndTimeStack.removeFromSuperview()
+		messageLabel.addSubview(tickAndTimeStack)
+		
+		let lineWidth = messageLabel.lastLineWidth
+		bringSubviewToFront(tickAndTimeStack)
+	
+	   // messageLabel.setDebuggingBackground(.red)
+		
+		if lineWidth <= bubbleView.frame.width * 0.8 && messageLabel.numberOfLines > 1 {
+			tickAndTimeStack.anchor(
+				top: nil,
+				leading: messageLabel.trailingAnchor,
+				bottom: messageLabel.bottomAnchor,
+				trailing: bubbleView.trailingAnchor,
+				padding: .init(top: 0, left: 8, bottom: 4, right: 4)
+			)
+		} else {
+			let extraInset: CGFloat = viewModel.isIncomingMessage ? 4 : 0
+			tickAndTimeStack.anchor(
+				top: nil,
+				leading: nil,
+				bottom: bubbleView.bottomAnchor,
+				trailing: messageLabel.trailingAnchor,
+				padding: .init(top: -12, left: 8, bottom: 8, right: 4 + extraInset)
+			)
+		}
+		
+		if viewModel.isFromCurrentUser {
+			bubbleView.backgroundColor = config?.general.backgroundHeaderColor.uiColor
+			let color = config?.general.headerTitleColor.uiColor
+			let attr: [NSAttributedString.Key: Any] = [
+				NSAttributedString.Key.foregroundColor: color,
+				NSAttributedString.Key.underlineStyle: NSUnderlineStyle.single.rawValue,
+				NSAttributedString.Key.underlineColor: color,
+				.font: FontFamily.Gotham.book.font(size: 15)
+			]
+			
+			messageLabel.setAttributes(attr, detector: .url)
+			messageLabel.textColor = color
+
+		} else {
+			bubbleView.backgroundColor = config?.chat.messageBackgroundColor.uiColor
+			let color = config?.chat.messageTextColor.uiColor
+			let attr: [NSAttributedString.Key: Any] = [
+				NSAttributedString.Key.foregroundColor: color,
+				NSAttributedString.Key.underlineStyle: NSUnderlineStyle.single.rawValue,
+				NSAttributedString.Key.underlineColor: color,
+				.font: FontFamily.Gotham.book.font(size: 15)
+			]
+
+			messageLabel.setAttributes(attr, detector: .url)
+			messageLabel.textColor = color
+		}
+		
+		messageLabel.enabledDetectors = Array(viewModel.messageDetectors)
+		messageLabel.setNeedsDisplay()
 		
 	}
 	
@@ -27,22 +98,26 @@ class ChatTextMessageCell: ChatBaseCell {
             messageLabel.enabledDetectors = [.address, .url, .phoneNumber, .date, .hashtag]
 		}
 		let textMessageKind = viewModel.message.kind.textMessageKind
-		switch textMessageKind {
-		case .text(let text), .emoji(let text):
-			messageLabel.text = text.trimmingCharacters(in: .whitespacesAndNewlines)
-			messageLabel.textColor = .black
-			if let font = font(for: textMessageKind) {
-				messageLabel.font = font
+		
+		if cannedResponseActive {
+            self.messageLabel.text = viewModel.message.content
+			
+			cannedResponseLayout(viewModel)
+		} else {
+			switch textMessageKind {
+			case .text(let text), .emoji(let text):
+				messageLabel.text = text.trimmingCharacters(in: .whitespacesAndNewlines)
+				messageLabel.textColor = .black
+				if let font = font(for: textMessageKind) {
+					messageLabel.font = font
+				}
+				
+			case .attributedText(let text):
+				messageLabel.attributedText = text
+				
+			default:
+				break
 			}
-			
-		case .attributedText(let text):
-			messageLabel.attributedText = text
-			
-		default:
-			break
-		}
-        tickAndTimeStack.removeFromSuperview()
-        messageLabel.addSubview(tickAndTimeStack)
 		if viewModel.isFromCurrentUser {
 //			messageLabel.frame = bubbleView.bounds.inset(by: .init(top: 0, left: 8, bottom: 0, right: 8))
             messageLabel.anchor(top: bubbleView.topAnchor, leading: bubbleView.leadingAnchor, bottom: bubbleView.bottomAnchor, trailing: bubbleView.trailingAnchor, padding: .init(top: 0, left: 8, bottom: 0, right: 8))
@@ -81,9 +156,9 @@ class ChatTextMessageCell: ChatBaseCell {
             bubbleView.backgroundColor = config?.general.backgroundHeaderColor.uiColor
             let color = config?.general.headerTitleColor.uiColor
             let attr: [NSAttributedString.Key: Any] = [
-                NSAttributedString.Key.foregroundColor: color,
-                NSAttributedString.Key.underlineStyle: NSUnderlineStyle.single.rawValue,
-                NSAttributedString.Key.underlineColor: color,
+                .foregroundColor: color,
+                .underlineStyle: NSUnderlineStyle.single.rawValue,
+                .underlineColor: color,
                 .font: FontFamily.Gotham.book.font(size: 15)
             ]
             
@@ -94,15 +169,16 @@ class ChatTextMessageCell: ChatBaseCell {
             bubbleView.backgroundColor = config?.chat.messageBackgroundColor.uiColor
             let color = config?.chat.messageTextColor.uiColor
             let attr: [NSAttributedString.Key: Any] = [
-                NSAttributedString.Key.foregroundColor: color,
-                NSAttributedString.Key.underlineStyle: NSUnderlineStyle.single.rawValue,
-                NSAttributedString.Key.underlineColor: color,
+                .foregroundColor: color,
+                .underlineStyle: NSUnderlineStyle.single.rawValue,
+                .underlineColor: color,
                 .font: FontFamily.Gotham.book.font(size: 15)
             ]
 
             messageLabel.setAttributes(attr, detector: .url)
             messageLabel.textColor = color
         }
+		}
         
         messageLabel.enabledDetectors = Array(viewModel.messageDetectors)
         messageLabel.setNeedsDisplay()
@@ -110,6 +186,7 @@ class ChatTextMessageCell: ChatBaseCell {
 	
 	override func apply(_ layoutAttributes: UICollectionViewLayoutAttributes) {
 		super.apply(layoutAttributes)
+		self.layoutIfNeeded()
 	}
 	
 	override func prepareForReuse() {
@@ -136,5 +213,48 @@ private extension ChatTextMessageCell {
 		default:
 			return nil
 		}
+	}
+}
+
+private extension ChatTextMessageCell {
+	func cannedResponseLayout(_ viewModel: MessageCellViewModel) {
+		messageLabel.anchor(top: bubbleView.topAnchor, leading: bubbleView.leadingAnchor, bottom: tickAndTimeStack.topAnchor, trailing: bubbleView.trailingAnchor, padding: .init(top: 0, left: 8, bottom: 0, right: 10))
+		messageLabel.textInsets = .init(top: 10, left: 10, bottom: 0, right: 8)
+		
+		tickAndTimeStack.removeFromSuperview()
+		messageLabel.addSubview(tickAndTimeStack)
+		let lineWidth = messageLabel.lastLineWidth
+		bringSubviewToFront(tickAndTimeStack)
+		
+		if lineWidth <= bubbleView.frame.width * 0.8 && messageLabel.numberOfLines > 1 {
+			tickAndTimeStack.anchor(
+				top: nil,
+				leading: messageLabel.trailingAnchor,
+				bottom: messageLabel.bottomAnchor,
+				trailing: bubbleView.trailingAnchor,
+				padding: .init(top: 0, left: 8, bottom: 4, right: 4)
+			)
+		} else {
+			let extraInset: CGFloat = viewModel.isIncomingMessage ? 4 : 0
+			tickAndTimeStack.anchor(
+				top: nil,
+				leading: nil,
+				bottom: bubbleView.bottomAnchor,
+				trailing: messageLabel.trailingAnchor,
+				padding: .init(top: 0, left: 8, bottom: 8, right: 4 + extraInset)
+			)
+		}
+		
+		bubbleView.backgroundColor = config?.chat.messageBackgroundColor.uiColor
+		let color = config?.chat.messageTextColor.uiColor
+		let attr: [NSAttributedString.Key: Any] = [
+			.foregroundColor: color,
+			.underlineStyle: NSUnderlineStyle.single.rawValue,
+			.underlineColor: color,
+			.font: FontFamily.Gotham.book.font(size: 15)
+		]
+		
+		messageLabel.setAttributes(attr, detector: .url)
+		messageLabel.textColor = color
 	}
 }

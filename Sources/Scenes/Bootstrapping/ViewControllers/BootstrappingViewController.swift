@@ -43,7 +43,6 @@ class BootstrappingViewController: BaseViewController, Layouting, ViewModelIntia
             .on(success: {
                  self.layoutableView.setLoading(false)
                 //	self.viewModel.trigger()
-				Logger.log(event: .info, "MERHABA")
             }) { _error in
                 self.showAlert(type: .error, title: Strings.sdk_error, message: _error.localizedDescription, actionTitle: Strings.sdk_ok) {
                     self.viewModel.router?.trigger(.close)

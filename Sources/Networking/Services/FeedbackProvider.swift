@@ -9,6 +9,7 @@ import Foundation
 
 protocol FeedbackProvider {
 	func rate(session: String, with status: Int) -> Future<EmptyResponse, Error>
+	func send(pathId: Int, type: CannedResponseSurveyType, for payload: [CannedResponsePayload]) -> Future<BaseResponse<String?>, Error>
 }
 
 final class FeedbackProviding: FeedbackProvider {
@@ -23,6 +24,15 @@ final class FeedbackProviding: FeedbackProvider {
 		//	}
 		// return promise.future
 		client.post(to: .rate, parameters: ["feedback": "\(status)", "session_firebase_key": session])
+	}
+	
+	func send(pathId: Int, type: CannedResponseSurveyType, for payload: [CannedResponsePayload]) -> Future<BaseResponse<String?>, Error> {
+		client.post(to: .rate, parameters: [
+			"path_id": pathId,
+			"feedback": type.rawValue,
+			"canned_response_payload": payload,
+			"source": "iOS"
+		])
 	}
 }
 

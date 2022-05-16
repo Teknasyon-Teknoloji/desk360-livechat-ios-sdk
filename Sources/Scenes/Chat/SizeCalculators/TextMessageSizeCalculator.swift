@@ -11,6 +11,7 @@ class TextMessageSizeCalculator: MessageSizeCalculator {
 
 	var incomingMessageLabelInsets = UIEdgeInsets(top: 7, left: 18, bottom: 7, right: 14)
 	var outgoingMessageLabelInsets = UIEdgeInsets(top: 7, left: 14, bottom: 7, right: 18)
+	var cannedResponseActive = false
 
     var messageLabelFont = FontFamily.Gotham.book.font(size: 16) ?? UIFont.preferredFont(forTextStyle: .body)
 
@@ -29,16 +30,29 @@ class TextMessageSizeCalculator: MessageSizeCalculator {
 		let maxWidth = messageContainerMaxWidth(for: message) - 50
 
 		var messageContainerSize: CGSize
-		let attributedText: NSAttributedString
+		let attributedText: NSAttributedString?
 
 		let textMessageKind = message.kind.textMessageKind
 		switch textMessageKind {
 		case .attributedText(let text):
 			attributedText = text
 		case .text(let text), .emoji(let text):
-			attributedText = NSAttributedString(string: text, attributes: [.font: messageLabelFont])
+			if !cannedResponseActive {
+				attributedText = NSAttributedString(string: text, attributes: [.font: messageLabelFont])
+			} else {
+                
+                guard let attr = CannedResponseAttributeCollector.shared.attribute(for: Int(message.id) ?? 0) else {
+                    attributedText = NSAttributedString(string: text, attributes: [.font: messageLabelFont])
+                    return .zero
+                }
+                attributedText = attr.attribute
+			}
 		default:
 			fatalError("messageContainerSize received unhandled MessageDataType: \(message.kind)")
+		}
+
+		guard let attributedText = attributedText else {
+			return  .zero
 		}
 
 		messageContainerSize = labelSize(for: attributedText, considering: maxWidth)
@@ -53,6 +67,9 @@ class TextMessageSizeCalculator: MessageSizeCalculator {
         }
         extraHeight += noOfLines > 20 ? 30 : 0
 		messageContainerSize.height += messageInsets.vertical + extraHeight
+        if cannedResponseActive && noOfLines > 4 {
+            //messageContainerSize.height += 40.0 //bottom gap
+        }
 
 		return messageContainerSize
 	}

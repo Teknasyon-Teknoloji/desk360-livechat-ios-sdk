@@ -11,7 +11,7 @@ import FirebaseCore
 import Foundation
 
 protocol LoginProvider {
-	func login(using credential: Credentials, smartPlugs: SmartPlug?) -> Future<AuthResponse, Error>
+	func login(using credential: Credentials, smartPlugs: SmartPlug?, path: Int?, payload: [CannedResponsePayload]?) -> Future<AuthResponse, Error>
     func authenticateSession(with token: Token) -> Future<Void, Error>
 }
 
@@ -22,11 +22,19 @@ final class LoginProviding: LoginProvider {
 		self.client = client
 	}
 	
-	func login(using credential: Credentials, smartPlugs: SmartPlug? = nil) -> Future<AuthResponse, Error> {
+	func login(using credential: Credentials, smartPlugs: SmartPlug? = nil, path: Int? = nil, payload: [CannedResponsePayload]? = nil) -> Future<AuthResponse, Error> {
 		var params: [String: Encodable] = ["name": credential.name, "email": credential.email, "source": "iOS"]
 		
 		if let smartPlugs = smartPlugs {
 			params["settings"] = smartPlugs.settings
+		}
+		
+		if let path = path {
+			params["path_id"] = path
+		}
+		
+		if let payload = payload {
+			params["canned_response_payload"] = payload
 		}
 		
 		if let chatbot = Storage.settings.object?.chatbot, chatbot == true {
@@ -56,6 +64,7 @@ final class LoginProviding: LoginProvider {
 
 extension Endpoint {
     private static var notificationsParams: [URLQueryItem] = [
+		.init(name: "source", value: "iOS"),
         .init(name: "uuid", value: Desk360LiveChat.shared.deviceID),
         .init(name: "push_token", value: Desk360LiveChat.shared.pushToken)
     ]

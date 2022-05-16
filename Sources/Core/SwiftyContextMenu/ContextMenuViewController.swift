@@ -126,10 +126,13 @@ class ContextMenuViewController: UIViewController {
             horizontalConstraint = contextMenuView.trailingAnchor.constraint(equalTo: snapshotImageView.leadingAnchor)
         }
         
-        let width = ((contextMenu.title?.size(constraintedWidth: UIScreen.main.bounds.width * 0.8).width ?? 250) + 10)
-        
+		self.view.layoutIfNeeded()
+		let newWidth = contextMenu.title?.width(withConstrainedHeight: .greatestFiniteMagnitude, font: FontFamily.Gotham.book.font(size: 16)) ?? 0.0
+		
+		let padding = UIScreen.main.bounds.size.width * (64 / 428)
+		
         NSLayoutConstraint.activate([
-            contextMenuView.widthAnchor.constraint(equalToConstant: width),
+			contextMenuView.widthAnchor.constraint(equalToConstant: newWidth - padding / 2),
             horizontalConstraint,
             verticalConstraint,
             edgeConstraint

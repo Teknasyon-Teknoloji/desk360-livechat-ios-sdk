@@ -21,7 +21,8 @@ final class PopUpViewController: UIViewController {
         self.popupView = PopupView(kind: kind, message: message)
         super.init(nibName: nil, bundle: nil)
     }
-    
+	
+
     required init?(coder: NSCoder) { fatalError() }
     
     override func viewDidLoad() {
@@ -58,6 +59,15 @@ class PopupView: UIView {
         button.setTitle(Strings.sdk_ok, for: .normal)
         return button
     }()
+	
+	lazy var cancelButton: ActionButton = {
+		let button = ActionButton(type: .system)
+		button.backgroundColor = config?.general.backgroundHeaderColor.uiColor
+		button.setTitleColor(config?.general.sendButtonTextColor.uiColor, for: .normal)
+		button.layer.cornerRadius = 20
+		button.setTitle("Cancel", for: .normal)
+		return button
+	}()
     
     override var intrinsicContentSize: CGSize {
         let width = UIScreen.main.bounds.width * 0.8
@@ -65,22 +75,37 @@ class PopupView: UIView {
         let height = popupTypeIcon.frame.height + textHeight + 44 + 44
         return .init(width: width, height: height)
     }
+	
+	private lazy var hStack: UIStackView = .hStack(
+		alignment: .fill,
+		distribution: .fillEqually,
+		spacing: 4,
+		[
+			cancelButton, actionButton
+		])
 
-    private lazy var stackView: UIView = .vStack(
+    private lazy var stackView: UIStackView = .vStack(
         alignment: .center,
         distribution: .fill,
         spacing: 10,
         [
             popupTypeIcon,
             popupMessagelabel,
-            .spacer(),
-            actionButton
+            .spacer()
         ]
     )
     
     init(kind: PopupType, message: String) {
         self.kind = kind
         super.init(frame: .zero)
+		if kind == .cancellable {
+			self.stackView.addArrangedSubview(hStack)
+			self.actionButton.setTitle(Strings.confirmation_end_conversation_button_yes, for: .normal)
+			self.cancelButton.setTitle(Strings.confirmation_end_conversation_button_no, for: .normal)
+		} else {
+			self.stackView.addArrangedSubview(actionButton)
+		}
+		
         self.popupMessagelabel.text = message
     }
     
@@ -98,6 +123,7 @@ class PopupView: UIView {
             // Fallback on earlier versions
         }
         actionButton.setSize(.init(width: frame.width * 0.9, height: 44))
+		actionButton.setContentCompressionResistancePriority(.defaultHigh, for: .horizontal)
         addSubview(stackView)
         stackView.fillSuperview(padding: .init(v: 12, h: 12))
     }
@@ -108,17 +134,16 @@ enum PopupType {
     case noInternet
     case error
     case success
+	case cancellable
     
     var image: UIImage {
         switch self {
-        case .error:
+		case .error, .info, .cancellable:
            return Images.info
-        case .info:
-            return Images.info
         case .success:
             return Images.success
         case .noInternet:
-        return Images.noInternet
+			return Images.noInternet
         }
     }
 }
@@ -131,7 +156,7 @@ final class PopupManager: NSObject {
     private var isPresenting = false
     private var configuration = PopupConfiguration()
     
-    func show(popupType: PopupType, on parentViewController: UIViewController, title: String, message: String, action: (() -> Void)?) {
+	func show(popupType: PopupType, on parentViewController: UIViewController, title: String, message: String, action: (() -> Void)?, cancelAction: (() -> Void)? = nil) {
         let viewControllerToPresent = PopUpViewController(kind: popupType, message: message)
         viewControllerToPresent.modalPresentationStyle = .overCurrentContext
         viewControllerToPresent.transitioningDelegate = self
@@ -140,6 +165,13 @@ final class PopupManager: NSObject {
             action?()
             viewControllerToPresent.dismiss(animated: true)
         }
+		
+		if let cancelAction = cancelAction {
+			viewControllerToPresent.popupView.cancelButton.action = {
+				viewControllerToPresent.dismiss(animated: true)
+			}
+		}
+		
         
         parentViewController.present(viewControllerToPresent, animated: true, completion: nil)
     }

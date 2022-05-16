@@ -14,13 +14,17 @@ final class MainViewModel {
 	weak private var router: Coordinator<MainRoute>?
 	private let agentProvider: AgentProvider
 	
+	private var onlineAgentCount = 0
 	private var onlineAgentAvailable = false
 	private var agent: Agent?
 	private var credentails: Credentials?
 	private let loginProvider: LoginProvider
+	public var smartPlugs: SmartPlug?
 	
 	var statusHandler: ((BaseViewController.State) -> Void)?
     var refreshRecentMessages: ((RecentMessage) -> Void)?
+    var redirectHandler: (() -> Void)?
+	private var loginHandler: ((Agent?) -> Void)?
     
 	init(
 		router: Coordinator<MainRoute>,
@@ -51,14 +55,15 @@ final class MainViewModel {
 				self.agent = nil
 				Logger.logError(error)
                 if let token = Session.token {
-                    Session.shared.loginToFirebase(using: token)
+                    _ = Session.shared.loginToFirebase(using: token)
                 }
 			}
 	}
 	
     func listenForAgentStatus() {
         guard let companyID = Storage.settings.object?.companyID else { return }
-        let ref = Database.liveChatDB.reference(to: .online(companyID: companyID))
+        guard let applicationID = Storage.settings.object?.applicationID else { return }
+        let ref = Database.liveChatDB.reference(to: .online(companyID: companyID, applicationID: applicationID))
         ref.observe(.value) { snapshot  in
             let value = snapshot.value as? Int ?? 0
             if snapshot.exists() && value > 0 {
@@ -68,35 +73,91 @@ final class MainViewModel {
             }
         }
     }
-    
-	private func fetchAgentIf(isOnline: Bool) -> Future<Agent?, Error> {
-		self.onlineAgentAvailable = isOnline
-		let uid = Auth.liveChat.currentUser?.uid ?? ""
-		return agentProvider.getOnlineAgentInfo(uid: uid)
+    	
+	private func login() {
+		guard let creds = getCredentails() else {
+			return
+		}
+		Session.shared
+			.startFlowWith(credentials: creds, smartPlug: self.smartPlugs)
+			.flatMap(getOnlineAgent)
+			.observe(on: .main)
+			.on(success: { agent in
+				self.loginHandler?(agent)
+			})
+			
+	}
+	
+	 private func presentChatOrLoginPage(for agent: Agent?) {
+		 
+		 guard let agent = agent else {
+			 self.router?.trigger(.login(isOnline: self.onlineAgentAvailable))
+			 return
+		 }
+		 
+		 guard let credentails = getCredentails() else {
+			 return
+		 }
+
+		 self.router?.trigger(.chat(agent: agent, user: credentails, delegate: self))
 	}
 	
 	func triggerChatScreen() {
-		
         if let active = Session.activeConversation {
-            if let cred = getCredentails() {
-                router?.trigger(.chat(agent: active.agent, user: cred, delegate: self))
-                return
-            }
+            self.presentChatOrLoginPage(for: active.agent)
+            return
         }
+		
+		if let settings = Storage.settings.object, settings.isActiveCannedResponse {
+            DispatchQueue.main.async {
+                self.router?.trigger(.cannedResponse)
+            }
+            self.redirectHandler?()
+			return
+		}
+		
+		guard let credentials = getCredentails() else {
+            self.presentChatOrLoginPage(for: nil)
+			return
+		}
+		
+		statusHandler?(.loading)
+
+		getOnlineCountFromCompany { [weak self] onlineCount in
+			guard let self = self else { return }
+            
+			guard onlineCount > 0 else {
+                self.statusHandler?(.showingData)
+				self.presentChatOrLoginPage(for: nil)
+				return
+			}
+			self.login()
+		}
         
-        router?.trigger(.login(isOnline: onlineAgentAvailable))
-        
-//		if self.onlineAgentAvailable, let agent = self.agent, let creds = self.getCredentails() {
-//			if Session.isLoggedIn {
-//                router?.trigger(.chat(agent: agent, user: creds, delegate: self))
-//			} else if let credentails = self.getCredentails() {
-//				reLogin(credentails: credentails)
-//			}
-//			// completion(.success(true))
-//		} else {
-//			router?.trigger(.login(isOnline: self.onlineAgentAvailable))
-//			// completion(.success(true))
-//		}
+		loginHandler = { [weak self] agent in
+			guard let self = self else { return }
+            self.statusHandler?(.showingData)
+            
+			guard let agent = agent else {
+				self.router?.trigger(.chat(agent: nil, user: credentials, delegate: self))
+				return
+			}
+			self.presentChatOrLoginPage(for: agent)
+		}
+	}
+	
+	private func getOnlineCountFromCompany(_ completion: @escaping (Int) -> Void) {
+		let company = Storage.settings.object?.companyID ?? 0
+        let application = Storage.settings.object?.applicationID ?? 0
+		agentProvider.getOnlineAgentCount(for: company, applicationId: application)
+			.on { onlineCount in
+				self.onlineAgentCount = onlineCount ?? 0
+				completion(self.onlineAgentCount)
+			} failure: { error in
+				Logger.log(event: .error, error)
+				self.onlineAgentCount = 0
+				
+			}
 	}
 	
     private func getCredentails() -> Credentials? {
@@ -108,6 +169,11 @@ final class MainViewModel {
         }
         return credentails
     }
+	
+	private func getOnlineAgent() -> Future<Agent?, Error> {
+		let uid = Auth.liveChat.currentUser?.uid ?? ""
+		return agentProvider.getOnlineAgentInfo(uid: uid)
+	}
     
 	// Normaly if the credentals are provided
 	func reLogin(credentails: Credentials) {

@@ -11,6 +11,12 @@ import UIKit
 
 class ChatVideoMessageCell: ChatBaseCell {
 	
+	override var viewModel: MessageCellViewModel? {
+		didSet {
+			updateUI()
+		}
+	}
+	
 	lazy var videoIcon: UIImageView = {
 		let imageView = UIImageView()
 		imageView.image = Images.videoIcon.withRenderingMode(.alwaysOriginal)
@@ -116,69 +122,8 @@ class ChatVideoMessageCell: ChatBaseCell {
 		topContainer.addSubview(circleProgressView)
 		addSubview(progressContainer)
         bubbleView.addSubview(messageLabel)
-        fileStack.clipsToBounds = true
-	}
-	
-	override func layoutViews() {
-		super.layoutViews()
-        topContainer.setSize(.init(width: 0, height: 110))
-        if let vm = viewModel, vm.message.content.isEmpty == false {
-            messageLabel.text = vm.message.content
-            messageLabel.anchor(top: nil, leading: bubbleView.leadingAnchor, bottom: bubbleView.bottomAnchor, trailing: bubbleView.trailingAnchor, padding: .init(v: 10, h: 10))
-            
-            fileStack.anchor(
-                top: topContainer.bottomAnchor,
-                leading: bubbleView.leadingAnchor,
-                bottom: messageLabel.topAnchor,
-                trailing: trailingAnchor,
-                padding: .init(top: 10, left: 10, bottom: 10, right: 10)
-            )
-            
-        } else {
-            fileStack.anchor(
-                top: topContainer.bottomAnchor,
-                leading: bubbleView.leadingAnchor,
-                bottom: nil,
-                trailing: tickView.leadingAnchor,
-                padding: .init(top: 10, left: 10, bottom: 10, right: 2)
-            )
-        }
-        
-		// tickView.setSize(.init(width: 12, height: 12))
-		tickAndTimeStack.anchor(
-            top: nil,
-            leading: nil,
-            bottom: bubbleView.bottomAnchor,
-            trailing: bubbleView.trailingAnchor,
-            padding: .init(top: 0, left: 0, bottom: 8, right: 8)
-        )
+        fileStack.clipsToBounds = true	}
 		
-		topContainer.anchor(
-			top: bubbleView.topAnchor,
-			leading: bubbleView.leadingAnchor,
-			bottom: nil,
-			trailing: bubbleView.trailingAnchor,
-			padding: .init(v: 10, h: 10)
-		)
-		
-		videoIcon.centerInSuperview()
-		circleProgressView.centerInSuperview()
-		playButton.centerInSuperview()
-				
-        progressContainer.anchor(
-            top: bubbleView.bottomAnchor,
-            leading: bubbleView.leadingAnchor,
-            bottom: nil,
-            trailing: bubbleView.trailingAnchor,
-            padding: .init(top: 8, left: 10, bottom: 10, right: 10),
-            size: .init(width: bubbleView.frame.width, height: 40)
-        )
-		
-		progressBarView.anchor(top: progressContainer.topAnchor, leading: progressContainer.leadingAnchor, bottom: nil, trailing: progressContainer.trailingAnchor, padding: .init(v: 10, h: 10), size: .init(width: bubbleView.frame.width, height: 2.5))
-		
-		progressLabel.anchor(top: progressBarView.bottomAnchor, leading: progressBarView.leadingAnchor, bottom: progressContainer.bottomAnchor, trailing: progressContainer.trailingAnchor, padding: .init(v: 4, h: 10))
-	}
-	
 	override func configure(with viewModel: MessageCellViewModel) {
 		super.configure(with: viewModel)
 		viewModel.uploadProgress = { progrss in
@@ -221,6 +166,7 @@ class ChatVideoMessageCell: ChatBaseCell {
         progressBarView.isHidden = !viewModel.isUploading
         progressContainer .isHidden = !viewModel.isUploading
         tickView.isHidden = viewModel.isUploading || viewModel.isIncomingMessage
+		self.viewModel = viewModel
 	}
 	
 	@objc private func didTapDownload() {
@@ -337,4 +283,93 @@ class ChatVideoMessageCell: ChatBaseCell {
 		
 		return url
 	}
+}
+
+private extension ChatVideoMessageCell {
+	
+	func updateUI() {
+		topContainer.anchor(
+			top: bubbleView.topAnchor,
+			leading: bubbleView.leadingAnchor,
+			bottom: nil,
+			trailing: bubbleView.trailingAnchor,
+			padding: .init(v: 10, h: 10),
+			size: .init(width: 0, height: 110)
+		)
+		
+		if let vm = viewModel, !vm.message.content.isEmpty {
+			messageLabel.text = vm.message.content
+			
+			fileStack.anchor(
+				top: topContainer.bottomAnchor,
+				leading: bubbleView.leadingAnchor,
+				bottom: nil,
+				trailing: bubbleView.trailingAnchor,
+				padding: .init(v: 10, h: 10)
+			)
+			
+			messageLabel.anchor(
+				top: fileStack.bottomAnchor,
+				leading: bubbleView.leadingAnchor,
+				bottom: nil,
+				trailing: bubbleView.trailingAnchor,
+				padding: .init(v: 10, h: 10)
+			)
+			
+			tickAndTimeStack.removeFromSuperview()
+			bubbleView.addSubview(tickAndTimeStack)
+			
+			tickAndTimeStack.anchor(
+				top: nil,
+				leading: nil,
+				bottom: bubbleView.bottomAnchor,
+				trailing: messageLabel.trailingAnchor,
+				padding: .init(top: 6, left: 8, bottom: 10, right: 8)
+			)
+			
+			bubbleView.bringSubviewToFront(tickAndTimeStack)
+			messageLabel.bottomAnchor.constraint(lessThanOrEqualTo: tickAndTimeStack.topAnchor, constant: 10).isActive = true
+			
+		} else {
+			Logger.log(event: .success, "Content => \(viewModel?.message.content)")
+			fileStack.anchor(
+				top: topContainer.bottomAnchor,
+				leading: bubbleView.leadingAnchor,
+				bottom: nil,
+				trailing: tickView.leadingAnchor,
+				padding: .init(top: 10, left: 10, bottom: 10, right: 2)
+			)
+			
+			tickAndTimeStack.anchor(
+				top: nil,
+				leading: nil,
+				bottom: nil,
+				trailing: bubbleView.trailingAnchor,
+				padding: .init(top: 0, left: 0, bottom: 8, right: 8)
+			)
+			bubbleView.bottomAnchor.constraint(equalTo: tickAndTimeStack.bottomAnchor).isActive = true
+		}
+		
+		// tickView.setSize(.init(width: 12, height: 12)
+		
+		videoIcon.centerInSuperview()
+		circleProgressView.centerInSuperview()
+		playButton.centerInSuperview()
+		
+		guard !(viewModel?.isCached ?? false) else { return }
+				
+		progressContainer.anchor(
+			top: bubbleView.bottomAnchor,
+			leading: bubbleView.leadingAnchor,
+			bottom: nil,
+			trailing: bubbleView.trailingAnchor,
+			padding: .init(top: 8, left: 10, bottom: 10, right: 10),
+			size: .init(width: bubbleView.frame.width, height: 40)
+		)
+		
+		progressBarView.anchor(top: progressContainer.topAnchor, leading: progressContainer.leadingAnchor, bottom: nil, trailing: progressContainer.trailingAnchor, padding: .init(v: 10, h: 10), size: .init(width: bubbleView.frame.width, height: 2.5))
+		
+		progressLabel.anchor(top: progressBarView.bottomAnchor, leading: progressBarView.leadingAnchor, bottom: progressContainer.bottomAnchor, trailing: progressContainer.trailingAnchor, padding: .init(v: 4, h: 10))
+	}
+	
 }

@@ -40,7 +40,7 @@ final class SessionTerminationViewController: BaseViewController, ViewModelIntia
 		layoutableView.transcriptButton.addTarget(self, action: #selector(transcriptButtonTapped), for: .touchUpInside)
 		layoutableView.likeButton.addTarget(self, action: #selector(ratingButtonTapped), for: .touchUpInside)
 		layoutableView.dislikeButton.addTarget(self, action: #selector(ratingButtonTapped), for: .touchUpInside)
-		layoutableView.startNewChatButton.action = viewModel.startNewChat
+		layoutableView.startNewChatButton.action = viewModel.triggerChatScreen
 
 	}
     

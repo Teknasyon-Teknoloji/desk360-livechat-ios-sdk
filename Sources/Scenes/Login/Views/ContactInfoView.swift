@@ -18,6 +18,14 @@ final class ContactInfoView: UIView, Layoutable, Loadingable {
             setupLayout()
         }
     }
+	
+	var credentials: Credentials? {
+		didSet {
+			guard let credentials = credentials else { return }
+			self.nameTextField.text = credentials.name
+			self.emailTextField.text = credentials.email
+		}
+	}
     
     private lazy var desk360LogoView: Desk360View = {
         let imageView = Desk360View()
@@ -172,7 +180,7 @@ final class ContactInfoView: UIView, Layoutable, Loadingable {
             leading: leadingAnchor,
             bottom: nil,
             trailing: trailingAnchor,
-            padding: .init(v: 20, h: 50)
+            padding: .init(v: 70, h: 50)
         )
         
         messageErrorLabel.anchor(
