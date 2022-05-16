@@ -90,9 +90,7 @@ public final class Desk360LiveChat {
         try? Storage.host.save(properites.host)
         if let creds = properites.loginCredentials {
             try? Storage.credentails.save(creds)
-        } else {
-            Storage.credentails.delete()
-        }
+		}
 			
 		if let smartPlugs = properites.smartPlug {
 			try? Storage.smartPlug.save(smartPlugs)

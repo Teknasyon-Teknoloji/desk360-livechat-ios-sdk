@@ -97,7 +97,6 @@ private extension MessagesDiffer {
 		}
 		
 		func diff(old: [T], new: [T]) -> [Change<T>] {
-            Logger.Log("START OF DIFF")
 			// The Symbol Table
 			// Each line works as the key in the table look-up, i.e. as table[line].
 			var table: [T.DiffId: TableEntry] = [:]
@@ -110,7 +109,6 @@ private extension MessagesDiffer {
 			perform2ndPass(old: old, table: &table, oldArray: &oldArray)
 			perform345Pass(newArray: &newArray, oldArray: &oldArray)
 			let changes = perform6thPass(new: new, old: old, newArray: newArray, oldArray: oldArray)
-            Logger.Log("END OF DIFF")
 			return changes
 		}
 		

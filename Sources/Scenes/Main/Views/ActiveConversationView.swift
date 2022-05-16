@@ -49,6 +49,7 @@ final class ActiveConversationView: UIView, Layoutable {
     
     lazy var startChatButton: ActionButton = {
         let button = ActionButton()
+        button.lockable = true
         button.setSize(.init(width: 32, height: 32))
         button.setImage(Images.startChat, for: .normal)
         button.backgroundColor = .blueRibbon
@@ -91,7 +92,7 @@ final class ActiveConversationView: UIView, Layoutable {
     func configure(with conversation: RecentMessage) {
         let agent = conversation.agent
         let textColor = config?.general.sectionHeaderTitleColor.uiColor ?? .dodgerBlue
-        agentName.text = agent.name
+        setAgentName(for: agent)
         questionHeadline.text = conversation.message.content
         questionHeadline.textColor = textColor
         if let attachment = conversation.message.attachment {
@@ -122,6 +123,26 @@ final class ActiveConversationView: UIView, Layoutable {
         
         setAgentImage(agent)
     }
+	
+	private func setAgentName(for agent: Agent) {
+		guard let settings = Storage.settings.object else { return }
+		
+		if let showName = settings.config.online.showAgentName, showName {
+			agentName.text = agent.name
+			return
+		}
+		
+		if let brandName = settings.config.general.brandName {
+			agentName.text = brandName
+			return
+		}
+		
+		if let appName = settings.applicationName {
+			agentName.text = appName
+			return
+		}
+		
+	}
     
     private func setAgentImage(_ agent: Agent?) {
         guard let url = avatarURL(agent: agent) else {

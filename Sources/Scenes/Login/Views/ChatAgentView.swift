@@ -108,13 +108,33 @@ final class ChatAgentView: UIView, Layoutable {
 		if let agent = agent {
 			agentStatusIndicator.isHidden = false
 			typingInfolabel.isHidden = false
-			agentNameLabel.text = agent.name
+			self.setAgentName(for: agent)
             typingInfolabel.text = Strings.online
 		} else {
             typingInfolabel.text = config?.offline.headerText
 			agentStatusIndicator.isHidden = true
 			agentNameLabel.text = config?.general.brandName ?? Storage.settings.object?.applicationName
 		}
+	}
+	
+	private func setAgentName(for agent: Agent) {
+		guard let settings = Storage.settings.object else { return }
+		
+		if let showName = settings.config.online.showAgentName, showName {
+			agentNameLabel.text = agent.name
+			return
+		}
+		
+		if let brandName = settings.config.general.brandName {
+			agentNameLabel.text = brandName
+			return
+		}
+		
+		if let appName = settings.applicationName {
+			agentNameLabel.text = appName
+			return
+		}
+		
 	}
     
     private func setAgentImage(_ agent: Agent?) {

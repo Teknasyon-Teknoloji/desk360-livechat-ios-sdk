@@ -28,11 +28,14 @@ final class ContactInfoViewController: BaseViewController, Layouting, ViewModelI
     
     override func bindUIControls() {
         super.bindUIControls()
+		layoutableView.credentials = Storage.credentails.object
         layoutableView.messageField.isHidden = viewModel.isOnline
         layoutableView.chatAgentView.configure(with: nil)
         layoutableView.isOnline = viewModel.isOnline
         listenForUIEvents()
         layoutableView.startChatButton.addTarget(self, action: #selector(didTapSubmitButton), for: .touchUpInside)
+		self.actForParentCannedResponse()
+		
     }
     
     override func bindViewModel() {
@@ -67,6 +70,29 @@ private extension ContactInfoViewController {
             layoutableView.nameTextField.text = cred.name
         }
     }
+	
+	func actForParentCannedResponse() {
+		if let viewController = navigationController?.viewControllers.last(where: { $0 != navigationController?.topViewController }), viewController is CannedResponseViewController {
+			viewModel.isFromCannedResponse = true
+			viewModel.backHandler = {
+				self.showPopup()
+			}
+		}
+	}
+	
+	func showPopup() {
+		PopupManager.shared.show(
+			popupType: .cancellable,
+			on: self,
+			title: "",
+			message: Strings.confirmation_end_conversation_title,
+			action: {
+				DispatchQueue.main.asyncAfter(deadline: .now() + 0.15) {
+					self.viewModel.router?.trigger(.popToRoot)
+				}
+			}, cancelAction: {})
+	}
+	
 }
 
 extension ContactInfoViewController: GrowingTextViewDelegate {

@@ -10,7 +10,7 @@ import FirebaseDatabase
 import Foundation
 
 final class ContactInfoViewModel {
-	weak private var router: Coordinator<MainRoute>?
+	weak private(set) var router: Coordinator<MainRoute>?
 	private let loginProvider: LoginProvider
 	private let agentProvider: AgentProvider
 	private let messageProvider: MessagingProvider
@@ -19,6 +19,8 @@ final class ContactInfoViewModel {
 	let smartPlug: SmartPlug?
 	private(set) var isOnline: Bool
     private var isSendingMessage: Bool = false
+	var isFromCannedResponse: Bool = false
+	var backHandler: (() -> Void)?
     
     enum AgentStatus {
         case online
@@ -82,7 +84,8 @@ final class ContactInfoViewModel {
 
     func listenForAgentStatus() {
         guard let companyID = Storage.settings.object?.companyID else { return }
-        let ref = Database.liveChatDB.reference(to: .online(companyID: companyID))
+        guard let applicationID = Storage.settings.object?.applicationID else { return }
+        let ref = Database.liveChatDB.reference(to: .online(companyID: companyID, applicationID: applicationID))
         ref.observe(.value) { snapshot  in
             let value = snapshot.value as? Int ?? 0
             if snapshot.exists() && value > 0 {
@@ -101,6 +104,10 @@ final class ContactInfoViewModel {
 	}
 	
 	func back() {
+		guard !isFromCannedResponse else {
+			self.backHandler?()
+			return
+		}
 		router?.trigger(.pop)
 	}
 }

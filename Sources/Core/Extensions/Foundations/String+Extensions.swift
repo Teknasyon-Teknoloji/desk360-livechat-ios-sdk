@@ -8,10 +8,65 @@
 import Foundation
 import UIKit
 
+extension NSAttributedString {
+	
+	public convenience init?(HTMLString html: String, font: UIFont? = nil) throws {
+		let options : [NSAttributedString.DocumentReadingOptionKey : Any] =
+			[ .documentType: NSAttributedString.DocumentType.html,
+               .characterEncoding: String.Encoding.utf8.rawValue
+            ]
+
+		guard let data = html.data(using: .utf8) else {
+			throw NSError(domain: "Parse Error", code: 0, userInfo: nil)
+		}
+
+		if let font = font {
+			guard let attr = try? NSMutableAttributedString(
+				data: data,
+				options: options,
+				documentAttributes: nil
+			) else {
+				throw NSError(domain: "Parse Error", code: 0, userInfo: nil)
+			}
+			/*var attrs = attr.attributes(at: 0, effectiveRange: nil)
+			attrs[NSAttributedString.Key.font] = font
+			attr.setAttributes(attrs, range: NSRange(location: 0, length: attr.length))*/
+                        
+            let textRangeForFont : NSRange = NSMakeRange(0, attr.length)
+            attr.addAttributes([NSAttributedString.Key.font : font], range: textRangeForFont)
+            
+			self.init(attributedString: attr)
+		} else {
+			try? self.init(data: data, options: options, documentAttributes: nil)
+		}
+	}
+}
+
 extension String {
     var uiColor: UIColor? {
         UIColor(hex: self)
     }
+
+	var htmlToAttributedString: NSAttributedString? {
+		guard let data = data(using: .utf8) else { return nil }
+		do {
+			
+			let attrString = try NSAttributedString(data: data, options: [.documentType: NSAttributedString.DocumentType.html, .characterEncoding:String.Encoding.utf8.rawValue], documentAttributes: nil)
+			
+			return attrString
+		} catch {
+			return nil
+		}
+	}
+	
+	func width(withConstrainedHeight height: CGFloat, font: UIFont) -> CGFloat {
+		let constraintRect = CGSize(width: .greatestFiniteMagnitude, height: height)
+		let boundingBox = self.boundingRect(with: constraintRect, options: .usesLineFragmentOrigin, attributes: [
+			.font: font
+		], context: nil)
+
+		return ceil(boundingBox.width)
+	}
     
     func size(constraintedWidth width: CGFloat) -> CGSize {
         let label =  UILabel(frame: CGRect(x: 0, y: 0, width: width, height: .greatestFiniteMagnitude))

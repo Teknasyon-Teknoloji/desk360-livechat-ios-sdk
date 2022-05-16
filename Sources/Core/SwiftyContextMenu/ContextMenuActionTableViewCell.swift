@@ -9,9 +9,10 @@ import UIKit
 
 class ContextMenuActionTableViewCell: UITableViewCell {
     
-    private let rightImageView = UIImageView(frame: CGRect(x: 0, y: 0, width: 25, height: 25))
+    private let rightImageView = UIImageView(frame: CGRect(x: 0, y: 0, width: 0, height: 25))
     private let lightSelectedBackgroundView: UIVisualEffectView
     private let darkSelectedBackgroundView: UIView
+	private let label = UILabel()
     
     private var separatorView: ContextMenuSeparatorView?
     private var style: ContextMenuUserInterfaceStyle = .light {
@@ -32,11 +33,14 @@ class ContextMenuActionTableViewCell: UITableViewCell {
         
         super.init(style: style, reuseIdentifier: reuseIdentifier)
         backgroundColor = .clear
-        textLabel?.numberOfLines = 0
-        textLabel?.textColor = UIColor(hex: "#2a2c4b")
+        label.numberOfLines = 0
+        label.textColor = UIColor(hex: "#2a2c4b")
+		label.textAlignment = .center
         rightImageView.contentMode = .scaleAspectFit
         accessoryView = rightImageView
         addSeparatorView()
+		contentView.addSubview(label)
+		label.anchor(top: topAnchor, leading: leadingAnchor, bottom: bottomAnchor, trailing: trailingAnchor, padding: .zero, size: .zero)
     }
     
     required init?(coder: NSCoder) {
@@ -49,22 +53,22 @@ class ContextMenuActionTableViewCell: UITableViewCell {
     }
     
     func configure(action: ContextMenuAction, with style: ContextMenuUserInterfaceStyle) {
-        textLabel?.text = action.title
+		label.text = action.title
         rightImageView.image = action.image?.withRenderingMode(.alwaysTemplate)
         
         self.style = style
         switch style {
         case .automatic:
-            textLabel?.textColor = action.tintColor
+            label.textColor = action.tintColor
             rightImageView.tintColor = action.tintColor
         case .light:
-            textLabel?.textColor = action.tintColor
+            label.textColor = action.tintColor
             rightImageView.tintColor = action.tintColor
         case .dark:
-            textLabel?.textColor = action.tintColorDark
+            label.textColor = action.tintColorDark
             rightImageView.tintColor = action.tintColorDark
         }
-        textLabel?.textColor = UIColor(hex: "#2a2c4b")
+        label.textColor = UIColor(hex: "#2a2c4b")
     }
     
     private func addSeparatorView() {

@@ -38,7 +38,10 @@ class BootstrappingViewModel {
     
     func prepare() -> Future<Void, Error> {
         Auth.liveChat.currentUser?.getIDTokenForcingRefresh(true, completion: nil)
-        self.router?.trigger(.intro)
+		if !Storage.isFirst.hasObject {
+			router?.trigger(.intro)
+			try? Storage.isFirst.save(true)
+		}
         return .init(result: .success(()))
     }
     
@@ -46,6 +49,9 @@ class BootstrappingViewModel {
         let hasValidSettingsSaved = Storage.settings.hasObject
         if hasValidSettingsSaved, let settings = Storage.settings.object {
             initFirebase(using: settings.firebaseConfig)
+            if settings.isActiveCannedResponse, let response = settings.cannedResponse {
+                CannedResponseAttributeCollector.shared.collectData(for: response)
+            }
             router?.trigger(.intro)
         }
         return getSettings()
@@ -61,6 +67,14 @@ class BootstrappingViewModel {
             .getSettings(language: languageCode)
             .map { settings -> Void in
                 try? Storage.settings.save(settings)
+				
+				if settings.isActiveCannedResponse {
+					guard let cannedResponse = settings.cannedResponse else { return }
+					DispatchQueue.main.async {
+						CannedResponseAttributeCollector.shared.collectData(for: cannedResponse)
+					}
+				}
+				
                 FirebaseApp.initIfNeeded(using: settings.firebaseConfig)
             }
     }
