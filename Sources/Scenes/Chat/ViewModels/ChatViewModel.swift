@@ -290,16 +290,17 @@ class ChatViewModel {
     
     private func messageViewModel(ofID id: String) -> MessageCellViewModel? {
         let messages = self.messages.flatMap { $0.messages }
-        return messages.first(where:  { $0.message.id == id })
+        return messages.first(where: { $0.message.id == id })
     }
     
 	func endChat() -> Future<Void, Error> {
+		let sessionId = Session.ID
 		return sessionProvider
-			.terminate(sessionID: Session.ID)
+			.terminate(sessionID: sessionId)
 			.observe(on: .main)
 			.map({ _ in
                 Session.terminate(forceDeleteCreds: false)
-                self.router?.trigger(.sessionTermination(agent: self.agent))
+				self.router?.trigger(.sessionTermination(agent: self.agent, sessionId: sessionId))
 			})
 	}
 	

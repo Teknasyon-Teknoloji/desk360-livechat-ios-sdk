@@ -76,57 +76,11 @@ final class MainViewController: BaseViewController, ViewModelIntializing, Layout
         }
         viewModel.fetchOnlineAgents()
         viewModel.listenForAgentStatus()
+        
+        viewModel.redirectHandler = { [weak self] in
+            guard let self = self else { return }
+            self.layoutableView.activeConversationView.startChatButton.isUserInteractionEnabled = true
+            self.layoutableView.chatContainer.startChatButton.isUserInteractionEnabled = true
+        }
 	}
 }
-
-// extension MainViewController: UITableViewDelegate, UITableViewDataSource {
-//
-//	func numberOfSections(in tableView: UITableView) -> Int {
-//		return sections.count
-//	}
-//
-//	func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-//		let section = sections[section]
-//		if section.isExpanded {
-//			return 2
-//		} else {
-//			return 1
-//		}
-//	}
-//
-//	func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
-//		if indexPath.row == 0 {
-//			let cell = tableView.dequeueReusableCell(for: indexPath, cellType: FaqBaseCell.self)
-//			cell.faqTitleLable.text = sections[indexPath.section].faq.title
-//			cell.isExpanded = sections[indexPath.section].isExpanded
-//			cell.isLastCell = indexPath.section == sections.count - 1
-//			return cell
-//		} else {
-//			let cell = tableView.dequeueReusableCell(for: indexPath, cellType: FaqDetailTableViewCell.self)
-//			cell.faqDetailsLable.text = sections[indexPath.section].faq.description
-//			return cell
-//		}
-//	}
-//
-//	func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
-//		tableView.deselectRow(at: indexPath, animated: true)
-//		let section = sections[indexPath.section]
-//		if indexPath.row == 0 {
-//			section.isExpanded = !section.isExpanded
-//			tableView.reloadSections([indexPath.section], with: .automatic)
-//			tableView.reloadRows(at: [indexPath], with: .automatic)
-//		} else {
-//			let viewModel = FaqDetailsViewModel(faq: section.faq)
-//			let faqDetailsVC = FaqDetailsViewController(viewModel: viewModel)
-//			self.navigationController?.pushViewController(faqDetailsVC, animated: true)
-//		}
-//	}
-// }
-//
-// extension MainViewController: UISearchBarDelegate {
-//	func searchBarTextDidBeginEditing(_ searchBar: UISearchBar) {
-//		let viewModel = FaqSearchViewModel()
-//		let viewController = FaqSearchViewController(viewModel: viewModel)
-//		self.navigationController?.pushViewController(viewController, animated: true)
-//	}
-// }

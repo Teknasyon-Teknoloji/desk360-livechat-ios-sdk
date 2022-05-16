@@ -14,8 +14,9 @@ enum MainRoute: Route {
 	case intro
 	case login(isOnline: Bool)
     case chat(agent: Agent?, user: Credentials, delegate: ChatDeletgate? = nil)
+	case cannedResponse
 	case offlineMessage
-	case sessionTermination(agent: Agent?)
+	case sessionTermination(agent: Agent?, sessionId: String? = nil)
 	case transcript
 	case pop
 	case dismiss
@@ -70,6 +71,7 @@ final class AppCoordinator: Coordinator<MainRoute> {
 				credentails: credentials,
 				loginProvider: factory.makeLoginProvider() 
 			)
+			mainViewModel.smartPlugs = self.smartPlug
 			
 			let mainVc = MainViewController(viewModel: mainViewModel)
 			router.setRootModule(mainVc, hideBar: true)
@@ -104,19 +106,32 @@ final class AppCoordinator: Coordinator<MainRoute> {
 			let chattingViewController = ChatViewController(viewModel: chattingViewModel)
 			router.push(chattingViewController, animated: true, completion: nil)
 			
+		case .cannedResponse:
+			let viewModel = CannedResponseViewModel(
+				feedbackProvider: factory.makeFeedbackProvider(),
+				agentProvider: factory.makeAgentProvider(),
+				loginProvider: factory.makeLoginProvider(),
+				router: self
+			)
+			let viewController = CannedResponseViewController(viewModel: viewModel)
+			router.push(viewController, animated: true, completion: nil)
+															  
 		case .offlineMessage:
 			let viewModel = OfflineMessageViewModel(router: self)
 			let offlineMessageVC = OfflineMessageViewController(viewModel: viewModel)
 			router.push(offlineMessageVC, animated: true, completion: nil)
 			
-		case .sessionTermination(let agent):
+		case .sessionTermination(let agent, let sessionId):
             if UIApplication.topViewController() is SessionTerminationViewController { return }
 			let viewModel = SessionTerminationViewModel(
 				router: self,
 				feedbackProvider: factory.makeFeedbackProvider(),
 				loginProvider: factory.makeLoginProvider(),
+				agentProvider: factory.makeAgentProvider(),
 				credentials: credentials,
-				agent: agent
+				smartPlugs: self.smartPlug,
+				agent: agent,
+				sessionId: sessionId
 			)
 			
 			let viewController = SessionTerminationViewController(viewModel: viewModel)

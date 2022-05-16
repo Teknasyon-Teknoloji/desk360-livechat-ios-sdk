@@ -69,6 +69,10 @@ final class Message: Equatable, Codable {
 		attachment = Attachment(from: attachmentsJson)
 	}
 	
+	convenience init() {
+		self.init(id: "", content: "", createdAt: .init(), updatedAt: .init(), senderName: "", agentID: nil, status: .sent, attachment: nil, isCustomer: false, mediaItem: nil)
+	}
+	
 	static func == (lhs: Message, rhs: Message) -> Bool {
 		lhs.id == rhs.id && lhs.content == rhs.content && lhs.createdAt == rhs.createdAt && lhs.status == rhs.status
 	}

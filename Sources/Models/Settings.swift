@@ -8,6 +8,7 @@ import Foundation
 // MARK: - DataClass
 struct Settings: Codable {
     var companyID: Int
+    var applicationID: Int
     let language: [String: String]
     let triggers: [JSONAny]?
     let config: Config
@@ -18,8 +19,11 @@ struct Settings: Codable {
     let firebaseConfig: FirebaseConfig
     let defaultBrandLogo: String?
     let defaultAvatar: String?
-    
+	let isActiveCannedResponse: Bool
+	let cannedResponse: [CannedResponse]?
+    	
     enum CodingKeys: String, CodingKey {
+        case applicationID = "application_id"
         case companyID = "company_id"
         case language, triggers, config, chatbot
         case chatbotSettings = "chatbot_settings"
@@ -28,6 +32,8 @@ struct Settings: Codable {
         case firebaseConfig = "firebase_config"
         case defaultBrandLogo = "default_brand_logo"
         case defaultAvatar = "default_avatar"
+		case cannedResponse = "canned_response"
+		case isActiveCannedResponse = "is_active_canned_response"
     }
 }
 
@@ -172,10 +178,12 @@ struct Offline: Codable {
 struct Online: Codable {
     let headerText: String
     let triggersStatus: Bool?
+	let showAgentName: Bool?
     
     enum CodingKeys: String, CodingKey {
         case headerText = "header_text"
         case triggersStatus = "triggers_status"
+		case showAgentName = "show_agent_name"
     }
 }
 

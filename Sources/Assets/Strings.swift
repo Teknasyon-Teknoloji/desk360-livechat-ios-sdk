@@ -366,4 +366,46 @@ struct Strings {
     static var sdk_warning: String {
         lang?.resolve(keyPath: "sdk_warning", orDefault: "") ?? ""
     }
+	
+	// MARK: - Canned Response Strings
+	static var canned_response_feedback_button_bad: String {
+		lang?.resolve(keyPath: "canned_response_feedback_button_bad", orDefault: "") ?? ""
+	}
+	
+	static var canned_response_feedback_button_good: String {
+		lang?.resolve(keyPath: "canned_response_feedback_button_good", orDefault: "") ?? ""
+	}
+	
+	static var canned_response_feedback_description: String {
+		lang?.resolve(keyPath: "canned_response_feedback_description", orDefault: "") ?? ""
+	}
+	
+	static var canned_response_feedback_success_title: String {
+		lang?.resolve(keyPath: "canned_response_feedback_success_title", orDefault: "") ?? ""
+	}
+	
+	static var canned_response_feedback_title: String {
+		lang?.resolve(keyPath: "canned_response_feedback_title", orDefault: "") ?? ""
+	}
+	
+	static var canned_response_list_menu_title: String {
+		lang?.resolve(keyPath: "canned_response_list_menu_title", orDefault: "") ?? ""
+	}
+	
+	static var canned_response_list_title: String {
+		lang?.resolve(keyPath: "canned_response_list_title", orDefault: "") ?? ""
+	}
+	
+	static var confirmation_end_conversation_button_no: String {
+		lang?.resolve(keyPath: "confirmation_end_conversation_button_no", orDefault: "") ?? ""
+	}
+	
+	static var confirmation_end_conversation_button_yes: String {
+		lang?.resolve(keyPath: "confirmation_end_conversation_button_yes", orDefault: "") ?? ""
+	}
+	
+	static var confirmation_end_conversation_title: String {
+		lang?.resolve(keyPath: "confirmation_end_conversation_title", orDefault: "") ?? ""
+	}
+	
 }

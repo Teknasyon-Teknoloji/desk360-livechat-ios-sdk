@@ -150,9 +150,9 @@ final class ChatViewController: BaseViewController, Layouting, ViewModelIntializ
 	override func bindViewModel() {
 		super.bindViewModel()
 		viewModel.receive { _ in
-			let firsReload = self.messages.isEmpty
 			self.messages = self.viewModel.messages
-            self.layoutableView.collectionView.reloadData()
+			self.layoutableView.collectionView.layoutIfNeeded()
+			self.layoutableView.collectionView.reloadData()
             if self.isFirstLayout {
                 self.layoutableView.collectionView.scrollToLastItem(at: .bottom, animated: !self.isFirstLayout)
                 self.layoutableView.hideBadgeView()
@@ -162,7 +162,7 @@ final class ChatViewController: BaseViewController, Layouting, ViewModelIntializ
                 self.showBadgeIfNeeded()
             }
            // self.layoutableView.collectionView.scrollToLastItem(at: .bottom, animated: !self.isFirstLayout)
-            Logger.log(event: .info, "Offset: \(self.layoutableView.collectionView.contentOffset)")
+            //Logger.log(event: .info, "Offset: \(self.layoutableView.collectionView.contentOffset)")
 //			for op in changedIndices {
 //				switch op {
 //				case let .insert(indexPath):
@@ -193,7 +193,10 @@ final class ChatViewController: BaseViewController, Layouting, ViewModelIntializ
 		}
 		
 		viewModel.agentHandler = { newAgent in
-			self.layoutableView.agentView.configure(with: newAgent)
+			if let isShowNameActive = Storage.settings.object?.config.online.showAgentName,
+			   isShowNameActive {
+				self.layoutableView.agentView.configure(with: newAgent)
+			}
 		}
 		
 		viewModel.listenForTypingEvents { _ in
@@ -324,6 +327,8 @@ final class ChatViewController: BaseViewController, Layouting, ViewModelIntializ
 			fatalError()
         }
         cell.configure(with: messaage)
+        cell.setNeedsLayout()
+        cell.layoutIfNeeded()
         cell.messageLabel.delegate = self
         cell.delegate = self
         return cell

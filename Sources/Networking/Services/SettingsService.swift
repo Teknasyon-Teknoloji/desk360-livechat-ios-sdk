@@ -29,7 +29,8 @@ extension Endpoint {
 		return Endpoint(
 			path: "/api/v1/chat/sdk/setting",
 			queryItems: [
-				URLQueryItem(name: "language", value: language)
+				URLQueryItem(name: "language", value: language),
+				URLQueryItem(name: "source", value: "iOS")
 			]
 		)
 	}

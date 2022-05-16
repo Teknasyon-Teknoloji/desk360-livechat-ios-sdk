@@ -72,6 +72,7 @@ protocol AgentProvider {
 	func checkOnlineAgent(for companyID: Int) -> Future<Bool, Error>
 	func getOnlineAgentInfo(uid: String) -> Future<Agent?, Error>
     func getTheRecentMessage(uid: String) -> Future<Message?, Error>
+    func getOnlineAgentCount(for companyId: Int, applicationId: Int) -> Future<Int?, Error>
 }
 
 final class AgentProviding: AgentProvider {
@@ -81,7 +82,7 @@ final class AgentProviding: AgentProvider {
 	func checkOnlineAgent(for companyID: Int) -> Future<Bool, Error> {
 		let promise = Promise<Bool, Error>()
 		databse
-			.reference(to: .online(companyID: companyID))
+			.reference(to: .online(companyID: companyID, applicationID: 0))
 			.getData { error, snapshot in
 				if let error = error {
 					Logger.logError(error)
@@ -99,6 +100,7 @@ final class AgentProviding: AgentProvider {
 	}
 	
 	func getOnlineAgentInfo(uid: String) -> Future<Agent?, Error> {
+		Logger.log(event: .info, "Fetching online agent")
 		let promise = Promise<Agent?, Error>()
 		databse
 			.reference(to: .agent(uid: uid))
@@ -118,6 +120,29 @@ final class AgentProviding: AgentProvider {
 			}
 		return promise.future
 
+	}
+    	
+	func getOnlineAgentCount(for companyId: Int, applicationId: Int) -> Future<Int?, Error> {
+		let promise = Promise<Int?, Error>()
+		databse
+			.reference(to: .online(companyID: companyId, applicationID: applicationId))
+			.getData { error, snapshot in
+				if let error = error {
+					Logger.log(event: .error, error.localizedDescription)
+					promise.fail(error: error)
+					return
+				}
+				
+				guard let count = snapshot.value as? Int else {
+					promise.succeed(value: nil)
+					return
+				}
+				
+				Logger.Log(count)
+				promise.succeed(value: count)
+				
+			}
+		return promise.future
 	}
     
     func getTheRecentMessage(uid: String) -> Future<Message?, Error> {

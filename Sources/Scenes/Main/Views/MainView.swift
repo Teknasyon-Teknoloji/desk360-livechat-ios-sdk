@@ -258,6 +258,7 @@ extension MainView {
         
         lazy var startChatButton: ActionButton = {
             let button = ActionButton(type: .system)
+            button.lockable = true
             button.setTitle(Strings.startChatSendMessageButtonText, for: .normal)
             button.setTitleColor(config?.general.sendButtonTextColor.uiColor, for: .normal)
             button.setImage(Images.send.tinted(with: config?.general.sendButtonTextColor.uiColor), for: .normal)

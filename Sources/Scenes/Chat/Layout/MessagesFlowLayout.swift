@@ -216,6 +216,7 @@ class MessagesCollectionViewFlowLayout: UICollectionViewFlowLayout {
 	lazy var typingIndicatorSizeCalculator = TypingCellSizeCalculator(layout: self)
 	lazy var linkPreviewMessageSizeCalculator = LinkPreviewMessageSizeCalculator(layout: self)
 	lazy var documentMessageSizeCalculator = DocumentMessageSizeCalculator(layout: self)
+	lazy var surveySizeCalculator = SurveySizeCalculator(layout: self)
 
 	/// Note:
 	/// - If you override this method, remember to call MessageLayoutDelegate's
@@ -227,6 +228,11 @@ class MessagesCollectionViewFlowLayout: UICollectionViewFlowLayout {
 			return typingIndicatorSizeCalculator
 		}
 		let message = messagesDataSource.messageForItem(at: indexPath)
+		
+		if message.id == "-1" {
+			return surveySizeCalculator
+		}
+		
 		switch message.kind {
 		case .text:
 			 return textMessageSizeCalculator
@@ -247,6 +253,10 @@ class MessagesCollectionViewFlowLayout: UICollectionViewFlowLayout {
 
 	func typingIndicatorViewSize(at indexPath: IndexPath) -> CGSize {
 		typingIndicatorSizeCalculator.sizeForItem(at: indexPath)
+	}
+	
+	func layoutForCannedResponse(value: Bool) {
+		self.textMessageSizeCalculator.cannedResponseActive = value
 	}
 	
 	func sizeForItem(at indexPath: IndexPath) -> CGSize {

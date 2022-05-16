@@ -14,6 +14,8 @@ import PersistenceKit
 struct Storage {
 	private init() {}
     
+	static let isFirst = SingleUserDefaultsStore<Bool>(uniqueIdentifier: .isFirst)!
+	
     static let settings = SingleUserDefaultsStore<Settings>(uniqueIdentifier: .settings)!
     
     static let appKey = SingleKeychainStore<String>(uniqueIdentifier: .appKey)
@@ -67,6 +69,10 @@ private struct StorageKey {
 }
 
 private extension String {
+	
+	@StorageKey
+	static private(set) var isFirst = "is_first"
+	
     @StorageKey
     static private(set) var token = "token"
     

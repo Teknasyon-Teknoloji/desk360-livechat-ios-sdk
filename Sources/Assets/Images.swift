@@ -173,4 +173,27 @@ struct Images {
     static var scrollDown: UIImage = {
         return Images.createImage(resources: "Images/scroll_down")
     }()
+	
+	// MARK: - Canned Response Assets
+	
+	static var cannedResponseReturnHome: UIImage = {
+		return Images.createImage(resources: "Images/HomeAsset")
+	}()
+	
+	static var cannedResponseChatIcon: UIImage = {
+		return Images.createImage(resources: "Images/CannedResponseChatIcon")
+	}()
+	
+	static var cannedResponseSurveyIcon: UIImage = {
+		return Images.createImage(resources: "Images/CannedResponseSurveyIcon")
+	}()
+	
+	static var cannedResponseGoodIcon: UIImage = {
+		return Images.createImage(resources: "Images/GoodIcon")
+	}()
+	
+	static var cannedResponseBadIcon: UIImage = {
+		return Images.createImage(resources: "Images/BadIcon")
+	}()
+	
 }
