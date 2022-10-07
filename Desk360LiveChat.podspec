@@ -9,7 +9,7 @@ Pod::Spec.new do |s|
   s.swift_version             = "5.1"
   s.ios.deployment_target     = "11.0"
   s.source_files              = "Sources/**/*.swift"
-  s.frameworks                = "Foundation"
+  #s.frameworks                = "Foundation"
 
   s.dependency 'Alamofire', '~> 5.0'
   s.dependency 'PersistenceKit'

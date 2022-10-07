@@ -13,6 +13,9 @@ Desk360 Chat SDK  provides simplicity and usability in one place. With this feat
 * [x] Multi-lingual support: It supports 40+ languages.
 * [x] Supports different types of media and file formats.
 * [x] Easy to use and integrate, only one line of code!
+* [x] Smart Plugs.
+* [x] Canned Response.
+* [x] Auto-Login.
 
 ## Example
 
@@ -42,19 +45,43 @@ You must add your info.plist file.
 <string>Allow the app to access your photos.</string>
 ```
 
-you can present the live support screen from any view controller like follows
+you can present the live support screen from any view controller like follows.
 
-```swift
-Desk360LiveChat
-.shared
-.start(
-   appKey: "12345",
-   host: "yourapp.desk360.com",
-   language: "en" // Optional
-   loginCredentials: Credentials(name: "Test", email: "test@test.com"), // Optional
-   on: self
+### Initialization
+
+   ```swift
+   let properties = LiveChatProperties(
+         appKey: apiKey,
+         host: host,
+         deviceID: uuid,
+         loginCredentials: credentials,
+         smartPlug: smartPlug
    )
-```
+
+   Desk360LiveChat.shared.start(using: properties, on: self)
+   ```
+
+### Smart Plugs
+
+   ```swift
+   let keyValues: SmartPlugType = [
+      "key1": 15,
+      "key2": true,
+      "key3": [1,2,3,4],
+      "key4": ["a","b","c"],
+      "key5": ["key6": 0]
+   ]
+   let smartPlug = SmartPlug(keyValues)
+   ```
+
+   Pass your Smart Plugs object to the `LiveChatProperties`.
+
+### Auto-Login
+
+   For enabling auto-login pass pre-defined user credentials into the SDK start method..
+   ```swift
+      var credentials =  Credentials(name: "Test", email: "test@test.com")
+   ```
 
 <br>
 
