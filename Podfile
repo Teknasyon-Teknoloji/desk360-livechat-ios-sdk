@@ -6,12 +6,12 @@ source 'https://github.com/CocoaPods/Specs.git'
 project './Desk360LiveChat.xcodeproj'
 
 def firebase 
-    pod 'Firebase'
+    pod 'Firebase', '8.15.0'
 end
 
 target 'Desk360LiveChat' do
     firebase
-    pod 'Alamofire'
+    pod 'Alamofire', '5.0'
     pod 'PersistenceKit'
     pod 'Firebase/Database'
     pod 'Firebase/Auth'

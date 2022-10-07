@@ -1,6 +1,6 @@
 Pod::Spec.new do |s|
   s.name                      = "Desk360LiveChat"
-  s.version                   = "1.0.5"
+  s.version                   = "1.0.6"
   s.summary                   = "Desk360 Live Chat provides simplicity and usability in one place. With this feature, you can provide live support to your customers directly within your app just by writing a few lines of code."
   s.homepage                  = "https://github.com/Teknasyon-Teknoloji/desk360-livechat-ios-sdk"
   s.license                   = { :type => "Commercial", :file => "LICENSE" }
@@ -15,7 +15,7 @@ Pod::Spec.new do |s|
   s.dependency 'PersistenceKit'
   s.dependency 'Firebase/Database'
   s.dependency 'Firebase/Auth'
-  s.dependency 'Firebase'
+  s.dependency 'Firebase', '~> 8.15.0'
   s.dependency 'NVActivityIndicatorView'
   s.dependency 'Kingfisher'
 

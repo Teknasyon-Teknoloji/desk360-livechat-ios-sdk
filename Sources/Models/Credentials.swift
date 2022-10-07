@@ -8,7 +8,7 @@
 import Foundation
 
 /// The credentials of the user
-public struct Credentials: Codable, Equatable {
+@objc public class Credentials: NSObject, Codable {
 	
 	/// User name
 	public let name: String
@@ -20,7 +20,7 @@ public struct Credentials: Codable, Equatable {
 	/// - Parameters:
 	///   - name: The user name.
 	///   - email: The user email.
-	public init(name: String, email: String) {
+    @objc public init(name: String, email: String) {
 		self.name = name
 		self.email = email
 	}
