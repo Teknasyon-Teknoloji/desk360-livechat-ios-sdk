@@ -11,15 +11,15 @@ import FirebaseCore
 import FirebaseDatabase
 import UIKit
 
-public struct LiveChatProperties {
-    public let appKey: String
-    public let host: String
-    public let deviceID: String
-    public let language: String?
-    public let loginCredentials: Credentials?
-	public let smartPlug: SmartPlug?
+@objc public class LiveChatProperties: NSObject {
+    @objc public let appKey: String
+    @objc public let host: String
+    @objc public let deviceID: String
+    @objc public let language: String?
+    @objc public let loginCredentials: Credentials?
+    @objc public let smartPlug: SmartPlug?
     
-    public init(
+    @objc public init(
         appKey: String,
         host: String,
         deviceID: String,
@@ -36,8 +36,8 @@ public struct LiveChatProperties {
     }
 }
 
-public final class Desk360LiveChat {
-    static public let shared = Desk360LiveChat()
+@objc public final class Desk360LiveChat: NSObject {
+    @objc static public let shared = Desk360LiveChat()
     
     private var appCoordinator: AppCoordinator?
     
@@ -57,7 +57,8 @@ public final class Desk360LiveChat {
         ]
     }
     
-    private init() {
+    private override init() {
+        super.init()
         listenForAppLifeCycleEvents()
     }
     
@@ -65,7 +66,7 @@ public final class Desk360LiveChat {
     /// - Parameters:
     ///   - properites: The credentials pf the current logged in user of the app or nil if not available.
     ///   - viewController: The view controll to present the live chat instance on.
-    public func start(using properites: LiveChatProperties, on viewController: UIViewController) {
+    @objc public func start(using properites: LiveChatProperties, on viewController: UIViewController) {
         
         if properites.appKey.isEmpty || properites.host.isEmpty {
             NSException(

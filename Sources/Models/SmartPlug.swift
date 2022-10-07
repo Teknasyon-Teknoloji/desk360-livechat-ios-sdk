@@ -9,9 +9,19 @@ import Foundation
 
 public typealias SmartPlugType = [String: Codable]
 
-public struct SmartPlug: Codable {
+@objc public class SmartPlug: NSObject, Codable {
 	
 	var settings: [String: EncodableValue]
+    
+    @objc public init(_ settings: [String: Any]) {
+        var holder: [String: EncodableValue] = [:]
+
+        for (key, value) in settings {
+            let data = NSKeyedArchiver.archivedData(withRootObject: value)
+            holder[key] = EncodableValue(data)
+        }
+        self.settings = holder
+    }
 	
 	public init(_ settings: SmartPlugType) {
 		var holder: [String: EncodableValue] = [:]
@@ -28,7 +38,7 @@ public struct SmartPlug: Codable {
 		try container.encode(self.settings, forKey: .settings)
 	}
 	
-	public init(from decoder: Decoder) throws {
+    required public init(from decoder: Decoder) throws {
 		let values = try decoder.container(keyedBy: CodingKeys.self)
 		if values.contains(.settings), let jsonData = try? values.decode(Data.self, forKey: .settings) {
 			settings = (try? JSONSerialization.jsonObject(with: jsonData) as? [String: EncodableValue]) ??  [String: EncodableValue]()
