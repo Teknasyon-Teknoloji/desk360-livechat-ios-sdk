@@ -408,4 +408,8 @@ struct Strings {
 		lang?.resolve(keyPath: "confirmation_end_conversation_title", orDefault: "") ?? ""
 	}
 	
+	static var session_expired: String {
+		lang?.resolve(keyPath: "session_expired", orDefault: "") ?? ""
+	}
+	
 }
