@@ -133,6 +133,7 @@ final class ChatViewController: BaseViewController, Layouting, ViewModelIntializ
 			} failure: { error in
                 self.layoutableView.agentView.optionsButton.isEnabled = true
 				Logger.logError(error)
+				self.viewModel.terminate()
 			}
 		}
 		
@@ -411,6 +412,10 @@ private extension ChatViewController {
 	
 	@objc func addFile() {
 		layoutableView.endEditing(true)
+
+		if viewModel.getSessionId().isEmpty {
+			showSessionTimeoutPopup()
+		} else {
 		let alert = UIAlertController(title: nil, message: nil, preferredStyle: .actionSheet)
 		
         let showImagePicker = UIAlertAction(title: "\(Strings.sdk_image)/ \(Strings.sdk_video)", style: .default) { _ in
@@ -445,6 +450,7 @@ private extension ChatViewController {
 		
 		present(alert, animated: true)
 	}
+}
 }
 
 extension String {
@@ -518,7 +524,24 @@ extension ChatViewController: GrowingTextViewDelegate {
 	}
 	
 	func textViewDidChange(_ textView: UITextView) {
+		if viewModel.getSessionId().isEmpty {
+			textView.text.removeAll()
+			resignKeyboard()
+			showSessionTimeoutPopup()
+		} else {
         chatView.sendButton.isEnabled = isSendButtonEnabled
 		viewModel.sendTypingEvents()
+	}
+}
+}
+
+extension ChatViewController {
+	private func showSessionTimeoutPopup() {
+		PopupManager.shared.show(popupType: .info, on: self, title: "", message: Strings.session_expired) { [weak self] in
+			guard let self = self else { return }
+			DispatchQueue.main.asyncAfter(deadline: .now() + 0.15) {
+				self.viewModel.terminate()
+			}
+		}
 	}
 }

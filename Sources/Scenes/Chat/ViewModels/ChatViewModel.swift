@@ -294,14 +294,21 @@ class ChatViewModel {
     }
     
 	func endChat() -> Future<Void, Error> {
-		let sessionId = Session.ID
-		return sessionProvider
-			.terminate(sessionID: sessionId)
-			.observe(on: .main)
-			.map({ _ in
-                Session.terminate(forceDeleteCreds: false)
-				self.router?.trigger(.sessionTermination(agent: self.agent, sessionId: sessionId))
+		let sessionId = getSessionId()
+
+		if sessionId.isEmpty {
+			let promise = Promise<Void, Error>()
+			promise.fail(error: AnyError(message: ""))
+			return promise.future
+		} else {
+			return sessionProvider
+				.terminate(sessionID: sessionId)
+				.observe(on: .main)
+				.map({ _ in
+					Session.terminate(forceDeleteCreds: false)
+					self.router?.trigger(.sessionTermination(agent: self.agent, sessionId: sessionId))
 			})
+		}
 	}
 	
 	func prepareTranscript() {
@@ -310,6 +317,15 @@ class ChatViewModel {
 	
 	func back() {
 		router?.trigger(.popToRoot)
+	}
+	
+	func terminate() {
+		Session.terminate(forceDeleteCreds: true)
+		router?.trigger(.popToRoot)
+	}
+	
+	func getSessionId() -> String {
+		Session.ID
 	}
 }
 
