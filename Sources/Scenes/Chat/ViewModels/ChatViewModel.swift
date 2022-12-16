@@ -32,6 +32,7 @@ class ChatViewModel {
     
 	var reload: (() -> Void)?
 	var agentHandler: ((Agent) -> Void)?
+	static var sessionID: String?
     
     weak var delegate: ChatDeletgate?
     
@@ -51,6 +52,7 @@ class ChatViewModel {
 		self.userCredentials = credentials
 		Session.isActive = true
         try? Storage.isActiveConverationAvailable.save(true)
+		Self.sessionID = Session.ID
 	}
 	
 	func listenForTypingEvents(complection: @escaping((Bool) -> Void)) {
@@ -294,7 +296,7 @@ class ChatViewModel {
     }
     
 	func endChat() -> Future<Void, Error> {
-		let sessionId = getSessionId()
+		let sessionId = Session.ID
 
 		if sessionId.isEmpty {
 			let promise = Promise<Void, Error>()
@@ -324,8 +326,8 @@ class ChatViewModel {
 		router?.trigger(.popToRoot)
 	}
 	
-	func getSessionId() -> String {
-		Session.ID
+	static func clearSessionId() {
+		sessionID?.removeAll()
 	}
 }
 

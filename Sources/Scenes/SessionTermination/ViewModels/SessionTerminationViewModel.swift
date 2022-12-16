@@ -53,6 +53,9 @@ final class SessionTerminationViewModel {
     }
     
     func rate(with rating: Rating) -> Future<Void, Error> {
+		defer {
+			ChatViewModel.clearSessionId()
+		}
 		return feedbackProvider.rate(session: self.sessionId ?? "", with: rating.rawValue).map { _ in }
     }
     

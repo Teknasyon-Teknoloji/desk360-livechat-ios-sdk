@@ -131,7 +131,7 @@ final class AppCoordinator: Coordinator<MainRoute> {
 				credentials: credentials,
 				smartPlugs: self.smartPlug,
 				agent: agent,
-				sessionId: sessionId
+				sessionId: sessionId ?? ChatViewModel.sessionID
 			)
 			
 			let viewController = SessionTerminationViewController(viewModel: viewModel)
