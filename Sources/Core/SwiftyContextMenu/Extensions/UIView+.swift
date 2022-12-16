@@ -10,7 +10,7 @@ import UIKit
 extension UIView {
 
     var absoluteFrame: CGRect {
-        UIApplication.shared.delegate?.window.flatMap { convert(bounds, to: $0) } ?? .zero
+        convert(bounds, to: nil)
     }
 
     func snapshot() -> UIImage? {

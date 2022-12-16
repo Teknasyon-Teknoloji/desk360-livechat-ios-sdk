@@ -413,7 +413,7 @@ private extension ChatViewController {
 	@objc func addFile() {
 		layoutableView.endEditing(true)
 
-		if viewModel.getSessionId().isEmpty {
+		if Session.ID.isEmpty {
 			showSessionTimeoutPopup()
 		} else {
 		let alert = UIAlertController(title: nil, message: nil, preferredStyle: .actionSheet)
@@ -524,7 +524,7 @@ extension ChatViewController: GrowingTextViewDelegate {
 	}
 	
 	func textViewDidChange(_ textView: UITextView) {
-		if viewModel.getSessionId().isEmpty {
+		if Session.ID.isEmpty {
 			textView.text.removeAll()
 			resignKeyboard()
 			showSessionTimeoutPopup()
