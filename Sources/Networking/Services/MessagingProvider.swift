@@ -7,7 +7,7 @@
 
 import FirebaseAuth
 import FirebaseDatabase
-import Foundation
+import UIKit
 
 struct MessagingResult {
 	let changes: [Change<Message>]
