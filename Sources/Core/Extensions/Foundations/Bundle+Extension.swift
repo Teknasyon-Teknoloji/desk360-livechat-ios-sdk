@@ -26,6 +26,16 @@ extension Bundle {
 		guard let resourceBundle = Bundle(url: resourceBundleUrl) else { return nil }
 		return resourceBundle
 	}
+    
+    static var fontsBundle: Bundle? {
+        let frameworkBundle = Bundle(for: Desk360LiveChat.self)
+        guard let resourceBundleUrl = frameworkBundle.url(forResource: "Desk360LiveChatAssets", withExtension: "bundle") else {
+            return nil
+        }
+        
+        guard let resourceBundle = Bundle(url: resourceBundleUrl) else { return nil }
+        return resourceBundle
+    }
 
 	static var localizedBundle: Bundle? {
 		let bundle = Bundle(for: MainView.self)
