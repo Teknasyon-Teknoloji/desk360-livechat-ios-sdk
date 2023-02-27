@@ -17,7 +17,7 @@ let package = Package(
     dependencies: [
         .package(name: "Firebase", url: "https://github.com/firebase/firebase-ios-sdk.git", .exact("8.15.0")),
         .package(url: "https://github.com/Alamofire/Alamofire.git", .exact("5.0.0")),
-        .package(url: "https://github.com/onevcat/Kingfisher.git", .exact("6.3.1")),
+        .package(url: "https://github.com/onevcat/Kingfisher.git", .exact(from: "6.3.0")),
         .package(url: "https://github.com/Teknasyon-Teknoloji/PersistenceKit.git", .branch("master")),
         .package(url: "https://github.com/ninjaprox/NVActivityIndicatorView.git", .upToNextMajor(from: "5.1.0"))
     ],
@@ -25,7 +25,7 @@ let package = Package(
         .target(
             name: "Desk360LiveChat",
             dependencies: [
-                 "PersistenceKit", "Alamofire", "NVActivityIndicatorView", "Kingfisher",
+                 "PersistenceKit", "Alamofire", "NVActivityIndicatorView", "KingfisherStatic",
                  .product(name: "FirebaseAuth", package: "Firebase"),
                  .product(name: "FirebaseDatabase", package: "Firebase")
 
