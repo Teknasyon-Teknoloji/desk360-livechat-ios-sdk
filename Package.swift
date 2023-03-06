@@ -30,7 +30,25 @@ let package = Package(
                  .product(name: "FirebaseDatabase", package: "Firebase")
 
           ],
-            path: "Sources"
+            path: "Sources",
+            resources: [
+                .copy("Assets/Fonts/Gotham-Black.ttf"),
+                .copy("Assets/Fonts/Gotham-BlackItalic.ttf"),
+                .copy("Assets/Fonts/Gotham-Bold.ttf"),
+                .copy("Assets/Fonts/Gotham-BoldItalic.ttf"),
+                .copy("Assets/Fonts/Gotham-Book.ttf"),
+                .copy("Assets/Fonts/Gotham-BookItalic.ttf"),
+                .copy("Assets/Fonts/Gotham-Light.ttf"),
+                .copy("Assets/Fonts/Gotham-LightItalic.ttf"),
+                .copy("Assets/Fonts/Gotham-Medium.ttf"),
+                .copy("Assets/Fonts/Gotham-MediumItalic.ttf"),
+                .copy("Assets/Fonts/Gotham-Thin.ttf"),
+                .copy("Assets/Fonts/Gotham-ThinItalic.ttf"),
+                .copy("Assets/Fonts/Gotham-Ultra.ttf"),
+                .copy("Assets/Fonts/Gotham-UltraItalic.ttf"),
+                .copy("Assets/Fonts/Gotham-XLight.ttf"),
+                .copy("Assets/Fonts/Gotham-XLightItalic.ttf"),
+            ]
         ),
         .testTarget(
             name: "Desk360LiveChatTests",
