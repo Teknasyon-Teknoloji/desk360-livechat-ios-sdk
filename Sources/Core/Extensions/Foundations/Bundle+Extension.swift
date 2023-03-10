@@ -18,11 +18,11 @@ extension Bundle {
 	#endif
 	
 	static var assetsBundle: Bundle? {
-		let frameworkBundle = Bundle(for: Desk360LiveChat.self)
-		guard let resourceBundleUrl = frameworkBundle.url(forResource: "Desk360LiveChatAssets", withExtension: "bundle") else {
-			return nil
-		}
-		
+        let frameworkBundle = Bundle.sdkBundle
+        guard let path = frameworkBundle.url(forResource: "Desk360LiveChat_Desk360LiveChat", withExtension: "bundle")?.absoluteString, let resourceBundleUrl = URL(string: path + "Desk360LiveChatAssets.bundle") else {
+            return nil
+        }
+        
 		guard let resourceBundle = Bundle(url: resourceBundleUrl) else { return nil }
 		return resourceBundle
 	}
