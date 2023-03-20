@@ -67,9 +67,6 @@ class TextMessageSizeCalculator: MessageSizeCalculator {
         }
         extraHeight += noOfLines > 20 ? 30 : 0
 		messageContainerSize.height += messageInsets.vertical + extraHeight
-        if cannedResponseActive && noOfLines > 4 {
-            //messageContainerSize.height += 40.0 //bottom gap
-        }
 
 		return messageContainerSize
 	}

@@ -6,7 +6,6 @@
 //
 
 import FirebaseAuth
-import Foundation
 import FirebaseDatabase
 
 final class MainViewModel {
@@ -109,10 +108,12 @@ final class MainViewModel {
         }
 		
 		if let settings = Storage.settings.object, settings.isActiveCannedResponse {
-            DispatchQueue.main.async {
-                self.router?.trigger(.cannedResponse)
-            }
-            self.redirectHandler?()
+			startChatbotMessaging()
+
+			DispatchQueue.main.async {
+				self.router?.trigger(.cannedResponse)
+			}
+			self.redirectHandler?()
 			return
 		}
 		
@@ -173,6 +174,10 @@ final class MainViewModel {
 	private func getOnlineAgent() -> Future<Agent?, Error> {
 		let uid = Auth.liveChat.currentUser?.uid ?? ""
 		return agentProvider.getOnlineAgentInfo(uid: uid)
+	}
+    
+	private func startChatbotMessaging() {
+		loginProvider.startChatbotMessaging()
 	}
     
 	// Normaly if the credentals are provided

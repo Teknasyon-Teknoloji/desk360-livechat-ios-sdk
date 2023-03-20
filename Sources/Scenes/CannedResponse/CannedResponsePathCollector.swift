@@ -13,21 +13,21 @@ internal struct CannedResponsePayload: Encodable {
 }
 
 internal struct CannedResponsePathCollector {
-	
+	static var shared = CannedResponsePathCollector()
+
 	private var paths: [CannedResponsePayload] = []
-	
-	mutating func append(_ path: ResponseElement) {
+
+	func append(_ path: ResponseElement) {
 		let date = Double(Date().timeIntervalSince1970)
 		let payload = CannedResponsePayload(id: path.id, date: date)
-		self.paths.append(payload)
+		Self.shared.paths.append(payload)
 	}
-	
-	mutating func reset() {
-		self.paths.removeAll()
+
+	func reset() {
+		Self.shared.paths.removeAll()
 	}
-	
+
 	func getPayload() -> [CannedResponsePayload] {
-		return self.paths
+		return Self.shared.paths
 	}
-	
 }
