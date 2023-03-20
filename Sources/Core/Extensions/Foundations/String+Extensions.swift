@@ -28,9 +28,6 @@ extension NSAttributedString {
 			) else {
 				throw NSError(domain: "Parse Error", code: 0, userInfo: nil)
 			}
-			/*var attrs = attr.attributes(at: 0, effectiveRange: nil)
-			attrs[NSAttributedString.Key.font] = font
-			attr.setAttributes(attrs, range: NSRange(location: 0, length: attr.length))*/
                         
             let textRangeForFont : NSRange = NSMakeRange(0, attr.length)
             attr.addAttributes([NSAttributedString.Key.font : font], range: textRangeForFont)

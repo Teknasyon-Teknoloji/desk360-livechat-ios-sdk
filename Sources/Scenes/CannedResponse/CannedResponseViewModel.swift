@@ -5,7 +5,6 @@
 //  Created by Alper Tabak on 23.02.2022.
 //
 
-import Foundation
 import FirebaseAuth
 
 protocol CannedResponseViewModelType: AnyObject {
@@ -50,7 +49,6 @@ final class CannedResponseViewModel: CannedResponseViewModelType {
 	private var loginHandler: ((Agent?) -> Void)?
 	private var onlineAgentCount = 0
 	private var disabledElementFlag = 0
-	private var payloadCollector = CannedResponsePathCollector()
     private var messages = [MessageCellViewModel]()
 	
 	// MARK: - Computed Properties
@@ -77,6 +75,7 @@ final class CannedResponseViewModel: CannedResponseViewModelType {
 		self.agentProvider = agentProvider
 		self.loginProvider = loginProvider
 		self.router = router
+		CannedResponsePathCollector.shared.reset()
 	}
 	
 	// MARK: - Methods
@@ -93,7 +92,7 @@ final class CannedResponseViewModel: CannedResponseViewModelType {
         guard self.sections.indices.contains(lastSection) else { return }
         guard let lastRow = self.sections.last?.lastIndex(where: { $0.id == element.id }) else { return }
         self.sections[lastSection][lastRow].setSelected(value: true)
-		self.payloadCollector.append(element)
+		CannedResponsePathCollector.shared.append(element)
 	}
 	
 	func goToPath(id: Int) {
@@ -125,12 +124,12 @@ final class CannedResponseViewModel: CannedResponseViewModelType {
 		self.resetHandler?()
 		disabledElementFlag = 0
 		self.latestUnitIndex = 0
-		self.payloadCollector.reset()
+		CannedResponsePathCollector.shared.reset()
 		self.start()
 	}
 	
 	func sendFeedback(for survey: CannedResponseSurveyType) {
-		let payload = self.payloadCollector.getPayload()
+		let payload = CannedResponsePathCollector.shared.getPayload()
 		guard !payload.isEmpty else { return }
 		guard latestPathId != 0 else { return }
 		_ = self.feedbackProvider.send(pathId: self.latestPathId, type: survey, for: payload)
@@ -174,14 +173,14 @@ final class CannedResponseViewModel: CannedResponseViewModelType {
 		statusHandler?(.loading)
 
 		getOnlineCountFromCompany { [weak self] onlineCount in
-			guard let self = self else { return }
-			
+			guard let self else { return }
+
 			guard onlineCount > 0 else {
 				self.statusHandler?(.showingData)
 				self.presentChatOrLoginPage(for: nil)
 				return
 			}
-			self.login(path: pathId, payload: self.payloadCollector.getPayload())
+			self.login(path: pathId, payload: CannedResponsePathCollector.shared.getPayload())
 		}
 		
 		loginHandler = { [weak self] agent in

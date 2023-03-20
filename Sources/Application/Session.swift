@@ -37,11 +37,9 @@ final class Session {
         Storage.messageStore.deleteAll()
         Storage.activeConversation.delete()
         Storage.token.delete()
-        if forceDeleteCreds {
-            //Storage.credentails.delete()
-        }
-        try? Storage.isActiveConverationAvailable.save(false)
-        try? Storage.mesaagesCache.deleteAll()
+		
+		try? Storage.isActiveConverationAvailable.save(false)
+		Storage.mesaagesCache.deleteAll()
         try? Auth.liveChat.signOut()
         NotificationCenter.default.post(.SessionTerminationNotification)
     }

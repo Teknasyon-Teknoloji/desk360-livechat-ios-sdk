@@ -13,6 +13,7 @@ import Foundation
 protocol LoginProvider {
 	func login(using credential: Credentials, smartPlugs: SmartPlug?, path: Int?, payload: [CannedResponsePayload]?) -> Future<AuthResponse, Error>
     func authenticateSession(with token: Token) -> Future<Void, Error>
+	func startChatbotMessaging()
 }
 
 final class LoginProviding: LoginProvider {
@@ -33,7 +34,7 @@ final class LoginProviding: LoginProvider {
 			params["path_id"] = path
 		}
 		
-		if let payload = payload {
+		if let payload = payload, !payload.isEmpty {
 			params["canned_response_payload"] = payload
 		}
 		
@@ -60,6 +61,15 @@ final class LoginProviding: LoginProvider {
 		}
 		return promise.future
 	}
+	
+	func startChatbotMessaging() {
+		var params: [String: Encodable] = ["source": "iOS", "application_id": ""]
+
+		if let appId = Storage.settings.object?.applicationID {
+			params["application_id"] = appId
+		}
+		let _: Future<EmptyResponse, Error> = client.post(to: .chatbotMessaging, parameters: params)
+	}
 }
 
 extension Endpoint {
@@ -80,6 +90,13 @@ extension Endpoint {
 		Endpoint(
 			path: "/api/v1/chatbots/create/session",
 			queryItems: notificationsParams
+		)
+	}
+	
+	static var chatbotMessaging: Endpoint {
+		Endpoint(
+			path: "/api/v1/chat/sdk/canned-response/start",
+			queryItems: []
 		)
 	}
 }

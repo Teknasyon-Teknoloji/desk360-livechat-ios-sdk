@@ -50,8 +50,10 @@ final class ContactInfoViewModel {
 	
 	func login(using name: String, email: String) -> Future<Void, Error> {
 		let creds = Credentials(name: name, email: email)
+		let payload = (Storage.settings.object?.isActiveCannedResponse ?? false) ? CannedResponsePathCollector.shared.getPayload() : []
+		
         return Session.shared
-			.startFlowWith(credentials: creds, smartPlug: self.smartPlug)
+			.startFlowWith(credentials: creds, smartPlug: self.smartPlug, payload: payload)
 			.flatMap(getOnlineAgent)
 			.observe(on: .main)
 			.map { agent in

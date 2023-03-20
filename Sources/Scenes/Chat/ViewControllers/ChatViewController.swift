@@ -424,7 +424,7 @@ private extension ChatViewController {
 				if case .video(let item) = fileType {
 					self.viewModel.send(message: .video(item)) { _ in }
 				} else {
-					self.viewModel.send(message: .photo(fileType.item )) { _ in
+					self.viewModel.send(message: .photo(fileType.item)) { _ in
 						
 					}
 				}
