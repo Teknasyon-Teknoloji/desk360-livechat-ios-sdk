@@ -84,18 +84,18 @@ final class AgentProviding: AgentProvider {
         databse
             .reference(to: .online(companyID: companyID, applicationID: 0))
             .getData { error, snapshot in
-            if let error = error {
-                Logger.logError(error)
-                promise.fail(error: error)
-            }
+                if let error = error {
+                    Logger.logError(error)
+                    promise.fail(error: error)
+                }
 
-            guard let snapshot else { return }
-            let value = snapshot.value as? Int ?? 0
-            if snapshot.exists() && value > 0 {
-                promise.succeed(value: true)
-            } else {
-                promise.succeed(value: false)
-            }
+                guard let snapshot else { return }
+                let value = snapshot.value as? Int ?? 0
+                if snapshot.exists() && value > 0 {
+                    promise.succeed(value: true)
+                } else {
+                    promise.succeed(value: false)
+                }
         }
 
         return promise.future
