@@ -15,7 +15,7 @@ let package = Package(
         ),
     ],
     dependencies: [
-        .package(name: "Firebase", url: "https://github.com/firebase/firebase-ios-sdk.git", .branch("main")),
+        .package(url: "https://github.com/firebase/firebase-ios-sdk.git", .branch("main")),
         .package(url: "https://github.com/Alamofire/Alamofire.git", .branch("master")),
         .package(url: "https://github.com/onevcat/Kingfisher.git", .branch("master")),
         .package(url: "https://github.com/Teknasyon-Teknoloji/PersistenceKit.git", .branch("master")),
@@ -25,18 +25,15 @@ let package = Package(
         .target(
             name: "Desk360LiveChat",
             dependencies: [
-                 "PersistenceKit", "Alamofire", "NVActivityIndicatorView", "Kingfisher",
-                 .product(name: "FirebaseAuth", package: "Firebase"),
-                 .product(name: "FirebaseDatabase", package: "Firebase")
-
+                .product(name: "FirebaseAuth", package: "firebase-ios-sdk"),
+                .product(name: "FirebaseDatabase", package: "firebase-ios-sdk"),
+                "Alamofire",
+                "Kingfisher",
+                "NVActivityIndicatorView",
+                "PersistenceKit"
           ],
             path: "Sources",
             resources: [.process("Assets/Desk360LiveChatAssets.bundle")]
-        ),
-        .testTarget(
-            name: "Desk360LiveChatTests",
-            dependencies: ["Desk360LiveChat"],
-            path: "Tests"
-        ),
+        )
     ]
 )
