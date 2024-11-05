@@ -26,7 +26,8 @@ extension UIApplication {
 			} else {
 				var statusBarFrame = keyWindow?.windowScene?.statusBarManager?.statusBarFrame ?? .zero
                 statusBarFrame.size.height = keyWindow?.safeAreaInsets.top ?? 0
-				let statusBarView = UIView(frame: statusBarFrame)
+
+                let statusBarView = UIView(frame: statusBarFrame)
 				statusBarView.tag = tag
 				statusBarView.layer.zPosition = 999999
 

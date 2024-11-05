@@ -79,26 +79,27 @@ final class AgentProviding: AgentProvider {
     
     private var databse: Database { .liveChatDB }
 	
-	func checkOnlineAgent(for companyID: Int) -> Future<Bool, Error> {
-		let promise = Promise<Bool, Error>()
-		databse
-			.reference(to: .online(companyID: companyID, applicationID: 0))
-			.getData { error, snapshot in
-				if let error = error {
-					Logger.logError(error)
-					promise.fail(error: error)
-				}
-                guard let snapshot = snapshot else { return }
-                let value = snapshot.value as? Int ?? 0
-				if snapshot.exists() && value > 0 {
-					promise.succeed(value: true)
-				} else {
-					promise.succeed(value: false)
-				}
-			}
-		
-		return promise.future
-	}
+    func checkOnlineAgent(for companyID: Int) -> Future<Bool, Error> {
+        let promise = Promise<Bool, Error>()
+        databse
+            .reference(to: .online(companyID: companyID, applicationID: 0))
+            .getData { error, snapshot in
+            if let error = error {
+                Logger.logError(error)
+                promise.fail(error: error)
+            }
+
+            guard let snapshot else { return }
+            let value = snapshot.value as? Int ?? 0
+            if snapshot.exists() && value > 0 {
+                promise.succeed(value: true)
+            } else {
+                promise.succeed(value: false)
+            }
+        }
+
+        return promise.future
+    }
 	
 	func getOnlineAgentInfo(uid: String) -> Future<Agent?, Error> {
 		Logger.log(event: .info, "Fetching online agent")
@@ -157,7 +158,7 @@ final class AgentProviding: AgentProvider {
                     return
                 }
                 guard let messagesDic = snapshot?.value as? [String: [String: Any]] else {
-                    Logger.log(event: .error, "No recent messages \(snapshot?.value)")
+                    Logger.log(event: .error, "No recent messages \(snapshot?.value ?? "")")
                     promise.succeed(value: nil)
                     return
                 }
