@@ -5,7 +5,7 @@ import PackageDescription
 let package = Package(
     name: "Desk360LiveChat",
     platforms: [
-        .iOS(.v12),
+        .iOS(.v13),
         .macOS(.v10_14)
     ],
     products: [
@@ -15,11 +15,11 @@ let package = Package(
         ),
     ],
     dependencies: [
-        .package(name: "Firebase", url: "https://github.com/firebase/firebase-ios-sdk.git", .exact("10.27.0")),
-        .package(url: "https://github.com/Alamofire/Alamofire.git", .exact("5.0.0")),
-        .package(url: "https://github.com/onevcat/Kingfisher.git", .upToNextMajor(from: "7.0.0")),
+        .package(name: "Firebase", url: "https://github.com/firebase/firebase-ios-sdk.git", .branch("main")),
+        .package(url: "https://github.com/Alamofire/Alamofire.git", .branch("master")),
+        .package(url: "https://github.com/onevcat/Kingfisher.git", .branch("master")),
         .package(url: "https://github.com/Teknasyon-Teknoloji/PersistenceKit.git", .branch("master")),
-        .package(url: "https://github.com/ninjaprox/NVActivityIndicatorView.git", .upToNextMajor(from: "5.1.0"))
+        .package(url: "https://github.com/ninjaprox/NVActivityIndicatorView.git", .branch("master"))
     ],
     targets: [
         .target(
