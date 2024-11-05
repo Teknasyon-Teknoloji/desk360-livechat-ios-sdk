@@ -15,7 +15,7 @@ let package = Package(
         ),
     ],
     dependencies: [
-        .package(name: "Firebase", url: "https://github.com/firebase/firebase-ios-sdk.git", .exact("8.15.0")),
+        .package(name: "Firebase", url: "https://github.com/firebase/firebase-ios-sdk.git", .exact("10.27.0")),
         .package(url: "https://github.com/Alamofire/Alamofire.git", .exact("5.0.0")),
         .package(url: "https://github.com/onevcat/Kingfisher.git", .upToNextMajor(from: "7.0.0")),
         .package(url: "https://github.com/Teknasyon-Teknoloji/PersistenceKit.git", .branch("master")),

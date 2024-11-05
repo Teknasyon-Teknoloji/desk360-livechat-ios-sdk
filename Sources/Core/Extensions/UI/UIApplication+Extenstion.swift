@@ -24,8 +24,9 @@ extension UIApplication {
 			if let statusBar = keyWindow?.viewWithTag(tag) {
 				return statusBar
 			} else {
-				let height = keyWindow?.windowScene?.statusBarManager?.statusBarFrame ?? .zero
-				let statusBarView = UIView(frame: height)
+				var statusBarFrame = keyWindow?.windowScene?.statusBarManager?.statusBarFrame ?? .zero
+                statusBarFrame.size.height = keyWindow?.safeAreaInsets.top ?? 0
+				let statusBarView = UIView(frame: statusBarFrame)
 				statusBarView.tag = tag
 				statusBarView.layer.zPosition = 999999
 

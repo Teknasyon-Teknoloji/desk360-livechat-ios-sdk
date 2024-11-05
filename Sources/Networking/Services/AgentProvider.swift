@@ -88,7 +88,8 @@ final class AgentProviding: AgentProvider {
 					Logger.logError(error)
 					promise.fail(error: error)
 				}
-				let value = snapshot.value as? Int ?? 0
+                guard let snapshot = snapshot else { return }
+                let value = snapshot.value as? Int ?? 0
 				if snapshot.exists() && value > 0 {
 					promise.succeed(value: true)
 				} else {
@@ -110,7 +111,7 @@ final class AgentProviding: AgentProvider {
 					promise.fail(error: error)
 					return
 				}
-				guard let json = snapshot.value as? [String: Any] else {
+				guard let json = snapshot?.value as? [String: Any] else {
 					promise.succeed(value: nil)
 					return
 				}
@@ -133,7 +134,7 @@ final class AgentProviding: AgentProvider {
 					return
 				}
 				
-				guard let count = snapshot.value as? Int else {
+				guard let count = snapshot?.value as? Int else {
 					promise.succeed(value: nil)
 					return
 				}
@@ -155,8 +156,8 @@ final class AgentProviding: AgentProvider {
                     promise.fail(error: error)
                     return
                 }
-                guard let messagesDic = snapshot.value as? [String: [String: Any]] else {
-                    Logger.log(event: .error, "No recent messages \(snapshot.value)")
+                guard let messagesDic = snapshot?.value as? [String: [String: Any]] else {
+                    Logger.log(event: .error, "No recent messages \(snapshot?.value)")
                     promise.succeed(value: nil)
                     return
                 }
